@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>SGIMAC — Iniciar sesión</title>
+    <style>
+        body { font-family:"Segoe UI",Arial,sans-serif; background:#f4f7fb; margin:0; min-height:100vh; display:flex; align-items:center; justify-content:center; }
+        .card { width:100%; max-width:380px; background:#fff; border:1px solid #dde5f0; border-radius:12px; padding:28px; }
+        h1 { color:#185fa5; text-align:center; margin:0 0 4px; }
+        p.sub { text-align:center; color:#6b7280; font-size:13px; margin:0 0 20px; }
+        label { display:block; font-size:13px; color:#6b7280; margin:14px 0 4px; }
+        input { width:100%; box-sizing:border-box; padding:9px 10px; border:1px solid #dde5f0; border-radius:8px; font:inherit; }
+        button { width:100%; margin-top:20px; background:#185fa5; color:#fff; border:0; border-radius:8px; padding:10px; font:inherit; font-weight:600; cursor:pointer; }
+        .error { background:#fee4e2; color:#b42318; padding:10px 12px; border-radius:8px; font-size:13px; margin-top:14px; }
+    </style>
+</head>
+<body>
+<div class="card">
+    <h1>SGIMAC</h1>
+    <p class="sub">Sistema de Gestión de Insumos Médicos<br>y Alertas de Caducidad</p>
+    <form th:action="@{/login}" method="post">
+        <label>Correo</label>
+        <input type="email" name="correo" required>
+        <label>Contraseña</label>
+        <input type="password" name="contrasena" required>
+        <button type="submit">Ingresar</button>
+    </form>
+    <div class="error" th:if="${error}" th:text="${error}"></div>
+</div>
+</body>
+</html>

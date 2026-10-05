@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>SGIMAC — Notificaciones</title>
+    <style>
+        body { font-family:"Segoe UI",Arial,sans-serif; background:#f4f7fb; margin:0; padding:32px; color:#1f2937; }
+        .card { max-width:700px; margin:0 auto; background:#fff; border:1px solid #dde5f0; border-radius:12px; padding:24px; }
+        .fila { display:flex; justify-content:space-between; align-items:center; gap:12px; padding:10px 0; border-bottom:1px solid #dde5f0; }
+        .noleida { font-weight:600; }
+        .fecha { font-size:12px; color:#6b7280; }
+        button { background:#e6f1fb; color:#185fa5; border:0; border-radius:8px; padding:6px 12px; font:inherit; font-size:13px; cursor:pointer; }
+        .vacio { color:#6b7280; padding:12px 0; }
+    </style>
+</head>
+<body>
+<div class="card">
+    <h1>Notificaciones</h1>
+    <div th:if="${#lists.isEmpty(notificaciones)}" class="vacio">No tienes notificaciones.</div>
+    <div class="fila" th:each="n : ${notificaciones}">
+        <span>
+            <span th:class="${n.leida} ? '' : 'noleida'" th:text="${n.mensaje}"></span><br>
+            <span class="fecha" th:text="${#temporals.format(n.fechaEnvio, 'dd/MM/yyyy HH:mm')}"></span>
+        </span>
+        <form th:if="${!n.leida}" th:action="@{/notificaciones/{id}/leida(id=${n.idNotificacion})}" method="post">
+            <button type="submit">Marcar leída</button>
+        </form>
+    </div>
+</div>
+</body>
+</html>

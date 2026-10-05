@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>SGIMAC — Usuarios</title>
+    <style>
+        body { font-family:"Segoe UI",Arial,sans-serif; background:#f4f7fb; margin:0; padding:32px; color:#1f2937; }
+        .card { max-width:800px; margin:0 auto; background:#fff; border:1px solid #dde5f0; border-radius:12px; padding:24px; }
+        table { width:100%; border-collapse:collapse; margin-top:12px; }
+        th, td { text-align:left; padding:8px; border-bottom:1px solid #dde5f0; font-size:14px; }
+        th { font-size:12px; color:#6b7280; text-transform:uppercase; }
+        .btn { display:inline-block; background:#185fa5; color:#fff; text-decoration:none; padding:8px 14px; border-radius:8px; font-size:14px; }
+        form.inline { display:inline; }
+        button.link { background:none; border:0; color:#185fa5; cursor:pointer; font:inherit; padding:0; }
+    </style>
+</head>
+<body>
+<div class="card">
+    <h1>Usuarios</h1>
+    <a class="btn" th:href="@{/usuarios/nuevo}">Nuevo usuario</a>
+    <table>
+        <tr><th>Nombres</th><th>Correo</th><th>Rol</th><th>Estado</th><th></th></tr>
+        <tr th:each="u : ${usuarios}">
+            <td th:text="${u.nombres}"></td>
+            <td th:text="${u.correo}"></td>
+            <td th:text="${u.nombreRol}"></td>
+            <td th:text="${u.activo} ? 'Activo' : 'Inactivo'"></td>
+            <td>
+                <form class="inline" th:action="@{/usuarios/{id}/estado(id=${u.idUsuario})}" method="post">
+                    <input type="hidden" name="activo" th:value="${!u.activo}">
+                    <button class="link" type="submit" th:text="${u.activo} ? 'Desactivar' : 'Activar'"></button>
+                </form>
+            </td>
+        </tr>
+    </table>
+</div>
+</body>
+</html>

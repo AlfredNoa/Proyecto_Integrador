@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>SGIMAC — Panel</title>
+    <style>
+        body { font-family:"Segoe UI",Arial,sans-serif; background:#f4f7fb; margin:0; padding:32px; color:#1f2937; }
+        .card { max-width:640px; margin:0 auto; background:#fff; border:1px solid #dde5f0; border-radius:12px; padding:24px; }
+        a { color:#185fa5; }
+    </style>
+</head>
+<body>
+<div class="card">
+    <h1>Bienvenido, <span th:text="${nombre}"></span></h1>
+    <p>Rol: <span th:text="${rol}"></span></p>
+    <p><a th:href="@{/usuarios}">Gestionar usuarios</a></p>
+    <p><a th:href="@{/categorias}">Gestionar categorías</a></p>
+    <p><a th:href="@{/insumos}">Gestionar insumos</a></p>
+    <p><a th:href="@{/proveedores}">Gestionar proveedores</a></p>
+    <p><a th:href="@{/ubicaciones}">Gestionar ubicaciones</a></p>
+    <p><a th:href="@{/lotes}">Gestionar lotes</a></p>
+    <p><a th:href="@{/movimientos}">Registrar movimientos</a></p>
+    <p><a th:href="@{/alertas}">Ver alertas pendientes</a></p>
+    <p><a th:href="@{/notificaciones}">Mis notificaciones</a></p>
+    <p><a th:href="@{/reportes}">Reportes</a></p>
+    <p><a th:href="@{/auditoria}">Auditoría del sistema</a></p>
+    <p><a th:href="@{/logout}">Cerrar sesión</a></p>
+</div>
+</body>
+</html>

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>SGIMAC — Lotes</title>
+    <style>
+        body { font-family:"Segoe UI",Arial,sans-serif; background:#f4f7fb; margin:0; padding:32px; color:#1f2937; }
+        .card { max-width:960px; margin:0 auto; background:#fff; border:1px solid #dde5f0; border-radius:12px; padding:24px; }
+        table { width:100%; border-collapse:collapse; margin-top:12px; }
+        th, td { text-align:left; padding:8px; border-bottom:1px solid #dde5f0; font-size:14px; }
+        th { font-size:12px; color:#6b7280; text-transform:uppercase; }
+        .top { display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap; align-items:center; }
+        .btn { display:inline-block; background:#185fa5; color:#fff; text-decoration:none; padding:8px 14px; border-radius:8px; font-size:14px; }
+        .b { display:inline-block; padding:2px 9px; border-radius:999px; font-size:12px; font-weight:600; }
+        .red { background:#fee4e2; color:#b42318; } .org { background:#fef0c7; color:#b54708; }
+        .yel { background:#fff7cc; color:#7a5f00; } .grn { background:#dcfae6; color:#067647; }
+    </style>
+</head>
+<body>
+<div class="card">
+    <div class="top">
+        <h1>Lotes</h1>
+        <a class="btn" th:href="@{/lotes/nuevo}">Nuevo lote</a>
+    </div>
+    <table>
+        <tr><th>Insumo</th><th>Código QR</th><th>Vencimiento</th><th>Stock</th><th>Ubicación</th><th>Proveedor</th><th>Estado</th></tr>
+        <tr th:each="l : ${lotes}">
+            <td th:text="${l.nombreInsumo}"></td>
+            <td th:text="${l.codigoQr}"></td>
+            <td th:text="${#temporals.format(l.fechaVencimiento, 'dd/MM/yyyy')}"></td>
+            <td th:text="${l.cantidadActual} + ' ' + ${l.unidadMedida}"></td>
+            <td th:text="${l.nombreUbicacion}"></td>
+            <td th:text="${l.razonSocialProveedor}"></td>
+            <td>
+                <span th:if="${l.estaVencido}" class="b red">Vencido</span>
+                <span th:unless="${l.estaVencido}" th:with="d=${l.diasParaVencer}">
+                    <span th:if="${d <= 30}" class="b org">Crítico</span>
+                    <span th:if="${d > 30 and d <= 90}" class="b yel">Por vencer</span>
+                    <span th:if="${d > 90}" class="b grn">Vigente</span>
+                </span>
+            </td>
+        </tr>
+    </table>
+</div>
+</body>
+</html>

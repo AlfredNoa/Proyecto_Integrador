@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>SGIMAC — Auditoría</title>
+    <style>
+        body { font-family:"Segoe UI",Arial,sans-serif; background:#f4f7fb; margin:0; padding:32px; color:#1f2937; }
+        .card { max-width:820px; margin:0 auto; background:#fff; border:1px solid #dde5f0; border-radius:12px; padding:24px; }
+        table { width:100%; border-collapse:collapse; margin-top:12px; }
+        th, td { text-align:left; padding:8px; border-bottom:1px solid #dde5f0; font-size:14px; }
+        th { font-size:12px; color:#6b7280; text-transform:uppercase; }
+    </style>
+</head>
+<body>
+<div class="card">
+    <h1>Auditoría del sistema</h1>
+    <table>
+        <tr><th>Fecha</th><th>Usuario</th><th>Acción</th><th>Entidad</th></tr>
+        <tr th:each="l : ${logs}">
+            <td th:text="${#temporals.format(l.fecha, 'dd/MM/yyyy HH:mm')}"></td>
+            <td th:text="${l.nombreUsuario}"></td>
+            <td th:text="${l.accion}"></td>
+            <td th:text="${l.entidad}"></td>
+        </tr>
+    </table>
+</div>
+</body>
+</html>

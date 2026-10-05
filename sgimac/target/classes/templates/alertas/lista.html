@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>SGIMAC — Alertas</title>
+    <style>
+        body { font-family:"Segoe UI",Arial,sans-serif; background:#f4f7fb; margin:0; padding:32px; color:#1f2937; }
+        .card { max-width:820px; margin:0 auto; background:#fff; border:1px solid #dde5f0; border-radius:12px; padding:24px; }
+        .fila { display:flex; justify-content:space-between; align-items:center; gap:12px; padding:10px 0; border-bottom:1px solid #dde5f0; }
+        .b { display:inline-block; padding:2px 9px; border-radius:999px; font-size:12px; font-weight:600; margin-right:8px; }
+        .red { background:#fee4e2; color:#b42318; } .org { background:#fef0c7; color:#b54708; }
+        .yel { background:#fff7cc; color:#7a5f00; } .blu { background:#e0edff; color:#175cd3; }
+        button { background:#e6f1fb; color:#185fa5; border:0; border-radius:8px; padding:6px 12px; font:inherit; font-size:13px; cursor:pointer; white-space:nowrap; }
+        .vacio { color:#6b7280; padding:12px 0; }
+    </style>
+</head>
+<body>
+<div class="card">
+    <h1>Alertas pendientes (<span th:text="${#lists.size(alertas)}"></span>)</h1>
+
+    <div th:if="${#lists.isEmpty(alertas)}" class="vacio">No hay alertas pendientes.</div>
+
+    <div class="fila" th:each="a : ${alertas}">
+        <span>
+            <span class="b"
+                  th:classappend="${a.tipo == 'CADUCIDAD' and a.nivel == 'ALTO'} ? 'red' : (${a.tipo == 'CADUCIDAD' and a.nivel == 'MEDIO'} ? 'org' : 'blu')"
+                  th:text="${a.tipo == 'CADUCIDAD'} ? (${a.nivel == 'ALTO'} ? 'Crítico' : 'Por vencer') : 'Stock bajo'">
+            </span>
+            <span th:text="${a.nombreInsumo} + ' — lote ' + ${a.codigoQrLote} +
+                            (${a.tipo == 'CADUCIDAD'} ? (' · vence ' + ${#temporals.format(a.fechaVencimientoLote, 'dd/MM/yyyy')}) : '')">
+            </span>
+        </span>
+        <form th:action="@{/alertas/{id}/atender(id=${a.idAlerta})}" method="post">
+            <button type="submit">Marcar atendida</button>
+        </form>
+    </div>
+
+    <p style="margin-top:16px; color:#6b7280; font-size:13px;">
+        Las alertas críticas y de lotes vencidos se notifican al personal médico.
+    </p>
+</div>
+</body>
+</html>

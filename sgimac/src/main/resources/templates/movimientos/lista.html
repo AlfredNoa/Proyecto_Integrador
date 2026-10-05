@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>SGIMAC — Movimientos</title>
+    <style>
+        body { font-family:"Segoe UI",Arial,sans-serif; background:#f4f7fb; margin:0; padding:32px; color:#1f2937; }
+        .card { max-width:820px; margin:0 auto; background:#fff; border:1px solid #dde5f0; border-radius:12px; padding:24px; margin-bottom:16px; }
+        table { width:100%; border-collapse:collapse; margin-top:12px; }
+        th, td { text-align:left; padding:8px; border-bottom:1px solid #dde5f0; font-size:14px; }
+        th { font-size:12px; color:#6b7280; text-transform:uppercase; }
+        label { display:block; font-size:13px; color:#6b7280; margin:0 0 4px; }
+        select, input { padding:8px 10px; border:1px solid #dde5f0; border-radius:8px; font:inherit; }
+        .grid { display:grid; grid-template-columns:2fr 1fr 1fr auto; gap:10px; align-items:end; }
+        button { background:#185fa5; color:#fff; border:0; border-radius:8px; padding:9px 16px; font:inherit; font-weight:600; cursor:pointer; }
+        .error { background:#fee4e2; color:#b42318; padding:10px 12px; border-radius:8px; font-size:14px; margin-top:12px; }
+        .ok { background:#dcfae6; color:#067647; padding:10px 12px; border-radius:8px; font-size:14px; margin-top:12px; }
+        .b { display:inline-block; padding:2px 9px; border-radius:999px; font-size:12px; font-weight:600; }
+        .org { background:#fef0c7; color:#b54708; } .grn { background:#dcfae6; color:#067647; }
+    </style>
+</head>
+<body>
+<div class="card">
+    <h1>Registrar movimiento</h1>
+    <form th:action="@{/movimientos/registrar}" method="post">
+        <div class="grid">
+            <div>
+                <label>Lote</label>
+                <select name="idLote" required>
+                    <option th:each="l : ${lotes}" th:value="${l.idLote}"
+                            th:text="${l.codigoQr} + ' · ' + ${l.nombreInsumo} + ' · stock ' + ${l.cantidadActual}"></option>
+                </select>
+            </div>
+            <div>
+                <label>Tipo</label>
+                <select name="tipo" required>
+                    <option value="SALIDA">Salida</option>
+                    <option value="ENTRADA">Entrada</option>
+                </select>
+            </div>
+            <div>
+                <label>Cantidad</label>
+                <input type="number" name="cantidad" min="1" value="1" required>
+            </div>
+            <div>
+                <button type="submit">Registrar</button>
+            </div>
+        </div>
+    </form>
+    <div class="error" th:if="${error}" th:text="${error}"></div>
+    <div class="ok" th:if="${mensaje}" th:text="${mensaje}"></div>
+</div>
+<div class="card">
+    <h1>Historial de movimientos</h1>
+    <table>
+        <tr><th>Fecha</th><th>Tipo</th><th>Insumo</th><th>Lote</th><th>Cantidad</th><th>Usuario</th></tr>
+        <tr th:each="m : ${movimientos}">
+            <td th:text="${#temporals.format(m.fecha, 'dd/MM/yyyy HH:mm')}"></td>
+            <td><span class="b" th:classappend="${m.tipo == 'SALIDA'} ? 'org' : 'grn'" th:text="${m.tipo}"></span></td>
+            <td th:text="${m.nombreInsumo}"></td>
+            <td th:text="${m.codigoQrLote}"></td>
+            <td th:text="${m.cantidad}"></td>
+            <td th:text="${m.nombreUsuario}"></td>
+        </tr>
+    </table>
+</div>
+</body>
+</html>

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>SGIMAC — Nuevo lote</title>
+    <style>
+        body { font-family:"Segoe UI",Arial,sans-serif; background:#f4f7fb; margin:0; padding:32px; color:#1f2937; }
+        .card { max-width:440px; margin:0 auto; background:#fff; border:1px solid #dde5f0; border-radius:12px; padding:24px; }
+        label { display:block; font-size:13px; color:#6b7280; margin:14px 0 4px; }
+        input, select { width:100%; box-sizing:border-box; padding:9px 10px; border:1px solid #dde5f0; border-radius:8px; font:inherit; }
+        button { width:100%; margin-top:20px; background:#185fa5; color:#fff; border:0; border-radius:8px; padding:10px; font:inherit; font-weight:600; cursor:pointer; }
+    </style>
+</head>
+<body>
+<div class="card">
+    <h1>Nuevo lote</h1>
+    <form th:action="@{/lotes/nuevo}" method="post">
+        <label>Insumo</label>
+        <select name="idInsumo" required>
+            <option th:each="i : ${insumos}" th:value="${i.idInsumo}" th:text="${i.nombre} + ' (' + ${i.codigo} + ')'"></option>
+        </select>
+        <label>Proveedor</label>
+        <select name="idProveedor" required>
+            <option th:each="p : ${proveedores}" th:value="${p.idProveedor}" th:text="${p.razonSocial}"></option>
+        </select>
+        <label>Ubicación</label>
+        <select name="idUbicacion" required>
+            <option th:each="u : ${ubicaciones}" th:value="${u.idUbicacion}" th:text="${u.nombre}"></option>
+        </select>
+        <label>Código QR / código de lote</label>
+        <input type="text" name="codigoQr" placeholder="Ej.: L-2026-010" required>
+        <label>Fecha de vencimiento</label>
+        <input type="date" name="fechaVencimiento" required>
+        <label>Cantidad</label>
+        <input type="number" name="cantidadActual" min="0" required>
+        <button type="submit">Guardar</button>
+    </form>
+</div>
+</body>
+</html>

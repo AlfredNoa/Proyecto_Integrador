@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>SGIMAC</title>
+    <style>
+        body { font-family: "Segoe UI", Arial, sans-serif; background: #f4f7fb; color: #1f2937; margin: 0; padding: 40px; }
+        .card { max-width: 640px; margin: 0 auto; background: #fff; border: 1px solid #dde5f0; border-radius: 12px; padding: 24px; }
+        h1 { color: #185fa5; margin: 0 0 4px; }
+        p.sub { color: #6b7280; margin: 0 0 20px; }
+        .ok { background: #dcfae6; color: #067647; padding: 10px 14px; border-radius: 8px; font-weight: 600; }
+        .error { background: #fee4e2; color: #b42318; padding: 10px 14px; border-radius: 8px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 16px; }
+        th, td { text-align: left; padding: 8px; border-bottom: 1px solid #dde5f0; }
+        th { font-size: 12px; color: #6b7280; text-transform: uppercase; }
+    </style>
+</head>
+<body>
+<div class="card">
+    <h1>SGIMAC</h1>
+    <p class="sub">Sistema de Gestión de Insumos Médicos y Alertas de Caducidad</p>
+
+    <div th:if="${conectado}" class="ok">Conexión a la base de datos establecida.</div>
+    <div th:unless="${conectado}" class="error">
+        No se pudo conectar a la base de datos.
+        <div th:text="${error}"></div>
+    </div>
+
+    <table th:if="${conectado}">
+        <tr><th>ID</th><th>Rol</th><th>Descripción</th></tr>
+        <tr th:each="r : ${roles}">
+            <td th:text="${r.idRol}"></td>
+            <td th:text="${r.nombre}"></td>
+            <td th:text="${r.descripcion}"></td>
+        </tr>
+    </table>
+</div>
+</body>
+</html>

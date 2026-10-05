@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>SGIMAC — Nuevo usuario</title>
+    <style>
+        body { font-family:"Segoe UI",Arial,sans-serif; background:#f4f7fb; margin:0; padding:32px; color:#1f2937; }
+        .card { max-width:420px; margin:0 auto; background:#fff; border:1px solid #dde5f0; border-radius:12px; padding:24px; }
+        label { display:block; font-size:13px; color:#6b7280; margin:14px 0 4px; }
+        input, select { width:100%; box-sizing:border-box; padding:9px 10px; border:1px solid #dde5f0; border-radius:8px; font:inherit; }
+        button { width:100%; margin-top:20px; background:#185fa5; color:#fff; border:0; border-radius:8px; padding:10px; font:inherit; font-weight:600; cursor:pointer; }
+    </style>
+</head>
+<body>
+<div class="card">
+    <h1>Nuevo usuario</h1>
+    <form th:action="@{/usuarios/nuevo}" method="post">
+        <label>Nombres</label>
+        <input type="text" name="nombres" required>
+        <label>Correo</label>
+        <input type="email" name="correo" required>
+        <label>Contraseña</label>
+        <input type="password" name="contrasena" required>
+        <label>Rol</label>
+        <select name="idRol" required>
+            <option th:each="r : ${roles}" th:value="${r.idRol}" th:text="${r.nombre}"></option>
+        </select>
+        <button type="submit">Guardar</button>
+    </form>
+</div>
+</body>
+</html>
