@@ -1,35 +1,35 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <title>SGIMAC — Ubicaciones</title>
-    <style>
-        body { font-family:"Segoe UI",Arial,sans-serif; background:#f4f7fb; margin:0; padding:32px; color:#1f2937; }
-        .card { max-width:640px; margin:0 auto; background:#fff; border:1px solid #dde5f0; border-radius:12px; padding:24px; }
-        table { width:100%; border-collapse:collapse; margin-top:12px; }
-        th, td { text-align:left; padding:8px; border-bottom:1px solid #dde5f0; font-size:14px; }
-        th { font-size:12px; color:#6b7280; text-transform:uppercase; }
-        input { padding:8px 10px; border:1px solid #dde5f0; border-radius:8px; font:inherit; }
-        button { background:#185fa5; color:#fff; border:0; border-radius:8px; padding:8px 14px; font:inherit; font-weight:600; cursor:pointer; }
-        form.alta { display:flex; gap:8px; margin-top:14px; flex-wrap:wrap; }
-        form.alta input { flex:1; min-width:150px; }
-    </style>
-</head>
+<head th:replace="~{fragments/layout :: head('Ubicaciones')}"></head>
 <body>
+<div class="app">
+<nav th:replace="~{fragments/layout :: sidebar('ubicaciones')}"></nav>
+<main class="main">
+<div th:replace="~{fragments/layout :: topbar('Ubicaciones')}"></div>
 <div class="card">
-    <h1>Ubicaciones</h1>
-    <table>
-        <tr><th>Nombre</th><th>Tipo</th></tr>
-        <tr th:each="u : ${ubicaciones}">
-            <td th:text="${u.nombre}"></td>
-            <td th:text="${u.tipo}"></td>
-        </tr>
-    </table>
-    <form class="alta" th:action="@{/ubicaciones/nuevo}" method="post">
-        <input type="text" name="nombre" placeholder="Nombre (ej. Almacén A-1)" required>
-        <input type="text" name="tipo" placeholder="Tipo (ej. Almacén central)" required>
-        <button type="submit">Agregar</button>
+    <h2>Agregar ubicación</h2>
+    <form th:action="@{/ubicaciones/nuevo}" method="post">
+        <div class="grid">
+            <div><label>Nombre</label><input type="text" name="nombre" placeholder="Nombre (ej. Almacén A-1)" required></div>
+            <div><label>Tipo</label><input type="text" name="tipo" placeholder="Tipo (ej. Almacén central)" required></div>
+            <div><button class="btn" type="submit">Agregar</button></div>
+        </div>
     </form>
+</div>
+<div class="card">
+    <h2>Listado de ubicaciones</h2>
+    <div class="vacio" th:if="${#lists.isEmpty(ubicaciones)}">No hay ubicaciones registradas.</div>
+    <div class="wrap" th:unless="${#lists.isEmpty(ubicaciones)}">
+        <table>
+            <tr><th>Nombre</th><th>Tipo</th></tr>
+            <tr th:each="u : ${ubicaciones}">
+                <td th:text="${u.nombre}"></td>
+                <td th:text="${u.tipo}"></td>
+            </tr>
+        </table>
+    </div>
+</div>
+</main>
 </div>
 </body>
 </html>

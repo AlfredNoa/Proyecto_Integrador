@@ -1,30 +1,57 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <title>SGIMAC — Panel</title>
-    <style>
-        body { font-family:"Segoe UI",Arial,sans-serif; background:#f4f7fb; margin:0; padding:32px; color:#1f2937; }
-        .card { max-width:640px; margin:0 auto; background:#fff; border:1px solid #dde5f0; border-radius:12px; padding:24px; }
-        a { color:#185fa5; }
-    </style>
-</head>
+<head th:replace="~{fragments/layout :: head('Panel principal')}"></head>
 <body>
+<div class="app">
+<nav th:replace="~{fragments/layout :: sidebar('panel')}"></nav>
+<main class="main">
+<div th:replace="~{fragments/layout :: topbar('Panel principal')}"></div>
+<div class="stats">
+    <div class="stat"><b th:text="${totalInsumos}">0</b><span>Insumos registrados</span></div>
+    <div class="stat"><b style="color:var(--grn)" th:text="${lotesVigentes}">0</b><span>Lotes vigentes</span></div>
+    <div class="stat"><b style="color:var(--org)" th:text="${lotesCriticos}">0</b><span>Vencen en 30 días o menos</span></div>
+    <div class="stat"><b style="color:var(--red)" th:text="${lotesVencidos}">0</b><span>Lotes vencidos</span></div>
+</div>
+
 <div class="card">
-    <h1>Bienvenido, <span th:text="${nombre}"></span></h1>
-    <p>Rol: <span th:text="${rol}"></span></p>
-    <p><a th:href="@{/usuarios}">Gestionar usuarios</a></p>
-    <p><a th:href="@{/categorias}">Gestionar categorías</a></p>
-    <p><a th:href="@{/insumos}">Gestionar insumos</a></p>
-    <p><a th:href="@{/proveedores}">Gestionar proveedores</a></p>
-    <p><a th:href="@{/ubicaciones}">Gestionar ubicaciones</a></p>
-    <p><a th:href="@{/lotes}">Gestionar lotes</a></p>
-    <p><a th:href="@{/movimientos}">Registrar movimientos</a></p>
-    <p><a th:href="@{/alertas}">Ver alertas pendientes</a></p>
-    <p><a th:href="@{/notificaciones}">Mis notificaciones</a></p>
-    <p><a th:href="@{/reportes}">Reportes</a></p>
-    <p><a th:href="@{/auditoria}">Auditoría del sistema</a></p>
-    <p><a th:href="@{/logout}">Cerrar sesión</a></p>
+    <h2>Alertas recientes</h2>
+    <div class="vacio" th:if="${#lists.isEmpty(alertasRecientes)}">Sin alertas pendientes.</div>
+    <div class="al" th:each="a : ${alertasRecientes}">
+        <span>
+            <span class="b"
+                  th:classappend="${a.tipo == 'CADUCIDAD' and a.nivel == 'ALTO'} ? 'red' : (${a.tipo == 'CADUCIDAD' and a.nivel == 'MEDIO'} ? 'org' : 'blu')"
+                  th:text="${a.tipo == 'CADUCIDAD'} ? (${a.nivel == 'ALTO'} ? 'Crítico' : 'Por vencer') : 'Stock bajo'"></span>
+            <span th:text="${a.nombreInsumo} + ' — lote ' + ${a.codigoQrLote} +
+                            (${a.tipo == 'CADUCIDAD'} ? (' · vence ' + ${#temporals.format(a.fechaVencimientoLote, 'dd/MM/yyyy')}) : '')"></span>
+        </span>
+    </div>
+    <p class="nota"><a class="btn s" th:href="@{/alertas}">Ver todas las alertas (<span th:text="${totalAlertas}">0</span>)</a></p>
+</div>
+
+<div class="card">
+    <h2>Lotes próximos a vencer</h2>
+    <div class="vacio" th:if="${#lists.isEmpty(proximos)}">No hay lotes próximos a vencer.</div>
+    <div class="wrap" th:unless="${#lists.isEmpty(proximos)}">
+        <table>
+            <tr><th>Insumo</th><th>Lote</th><th>Vencimiento</th><th>Stock</th><th>Estado</th></tr>
+            <tr th:each="l : ${proximos}">
+                <td th:text="${l.nombreInsumo}"></td>
+                <td th:text="${l.codigoQr}"></td>
+                <td th:text="${#temporals.format(l.fechaVencimiento, 'dd/MM/yyyy')}"></td>
+                <td th:text="${l.cantidadActual} + ' ' + ${l.unidadMedida}"></td>
+                <td>
+                    <span th:if="${l.estaVencido()}" class="b red">Vencido</span>
+                <span th:unless="${l.estaVencido()}" th:with="d=${l.diasParaVencer()}">
+                    <span th:if="${d <= 30}" class="b org">Crítico</span>
+                    <span th:if="${d > 30 and d <= 90}" class="b yel">Por vencer</span>
+                    <span th:if="${d > 90}" class="b grn">Vigente</span>
+                </span>
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>
+</main>
 </div>
 </body>
 </html>

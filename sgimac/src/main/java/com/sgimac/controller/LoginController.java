@@ -1,7 +1,12 @@
 package com.sgimac.controller;
 
+import com.sgimac.dao.AlertaDao;
+import com.sgimac.dao.InsumoDao;
 import com.sgimac.dao.LogAuditoriaDao;
+import com.sgimac.dao.LoteDao;
 import com.sgimac.dao.UsuarioDao;
+import com.sgimac.model.Alerta;
+import com.sgimac.model.Lote;
 import com.sgimac.model.Usuario;
 import com.sgimac.util.PasswordUtil;
 import jakarta.servlet.http.HttpSession;
@@ -11,6 +16,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -21,10 +27,17 @@ public class LoginController {
 
     private final UsuarioDao usuarioDao;
     private final LogAuditoriaDao logAuditoriaDao;
+    private final InsumoDao insumoDao;
+    private final LoteDao loteDao;
+    private final AlertaDao alertaDao;
 
-    public LoginController(UsuarioDao usuarioDao, LogAuditoriaDao logAuditoriaDao) {
+    public LoginController(UsuarioDao usuarioDao, LogAuditoriaDao logAuditoriaDao,
+                           InsumoDao insumoDao, LoteDao loteDao, AlertaDao alertaDao) {
         this.usuarioDao = usuarioDao;
         this.logAuditoriaDao = logAuditoriaDao;
+        this.insumoDao = insumoDao;
+        this.loteDao = loteDao;
+        this.alertaDao = alertaDao;
     }
 
     @GetMapping("/login")
@@ -65,6 +78,21 @@ public class LoginController {
         }
         model.addAttribute("nombre", sesion.getAttribute("usuarioNombre"));
         model.addAttribute("rol", sesion.getAttribute("usuarioRol"));
+
+        // Indicadores del panel principal
+        List<Lote> lotes = loteDao.listar();
+        long vigentes = lotes.stream().filter(l -> !l.estaVencido() && l.diasParaVencer() > 90).count();
+        long criticos = lotes.stream().filter(l -> !l.estaVencido() && l.diasParaVencer() <= 30).count();
+        long vencidos = lotes.stream().filter(Lote::estaVencido).count();
+        List<Alerta> pendientes = alertaDao.listarPendientes();
+
+        model.addAttribute("totalInsumos", insumoDao.listar().size());
+        model.addAttribute("lotesVigentes", vigentes);
+        model.addAttribute("lotesCriticos", criticos);
+        model.addAttribute("lotesVencidos", vencidos);
+        model.addAttribute("totalAlertas", pendientes.size());
+        model.addAttribute("alertasRecientes", pendientes.stream().limit(5).toList());
+        model.addAttribute("proximos", loteDao.listarProximosAVencer(90).stream().limit(5).toList());
         return "panel";
     }
 

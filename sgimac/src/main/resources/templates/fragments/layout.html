@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<!-- Fragmentos compartidos por todas las vistas (cabecera, menú lateral y barra superior) -->
+<head th:fragment="head(titulo)">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title th:text="'SGIMAC — ' + ${titulo}">SGIMAC</title>
+    <link rel="stylesheet" th:href="@{/css/sgimac.css}">
+</head>
+<body>
+
+<nav class="side" th:fragment="sidebar(activo)">
+    <div class="logo">SGIMAC</div>
+    <div class="sub">Hospital José Agurto Tello</div>
+
+    <a class="nav" th:classappend="${activo == 'panel'} ? 'on'" th:href="@{/panel}">Panel principal</a>
+    <a class="nav" th:classappend="${activo == 'insumos'} ? 'on'" th:href="@{/insumos}">Insumos</a>
+    <a class="nav" th:classappend="${activo == 'lotes'} ? 'on'" th:href="@{/lotes}">Lotes</a>
+    <a class="nav" th:classappend="${activo == 'movimientos'} ? 'on'" th:href="@{/movimientos}">Movimientos</a>
+    <a class="nav" th:classappend="${activo == 'alertas'} ? 'on'" th:href="@{/alertas}">
+        Alertas
+        <span class="b red" th:if="${alertasPendientes != null and alertasPendientes > 0}" th:text="${alertasPendientes}"></span>
+    </a>
+    <a class="nav" th:classappend="${activo == 'notificaciones'} ? 'on'" th:href="@{/notificaciones}">
+        Notificaciones
+        <span class="b blu" th:if="${notificacionesNoLeidas != null and notificacionesNoLeidas > 0}" th:text="${notificacionesNoLeidas}"></span>
+    </a>
+    <a class="nav" th:classappend="${activo == 'reportes'} ? 'on'" th:href="@{/reportes}">Reportes</a>
+
+    <div class="sec">Catálogos</div>
+    <a class="nav" th:classappend="${activo == 'categorias'} ? 'on'" th:href="@{/categorias}">Categorías</a>
+    <a class="nav" th:classappend="${activo == 'proveedores'} ? 'on'" th:href="@{/proveedores}">Proveedores</a>
+    <a class="nav" th:classappend="${activo == 'ubicaciones'} ? 'on'" th:href="@{/ubicaciones}">Ubicaciones</a>
+
+    <div class="sec">Administración</div>
+    <a class="nav" th:classappend="${activo == 'usuarios'} ? 'on'" th:href="@{/usuarios}">Usuarios</a>
+    <a class="nav" th:classappend="${activo == 'auditoria'} ? 'on'" th:href="@{/auditoria}">Auditoría</a>
+
+    <a class="nav out" th:href="@{/logout}">Cerrar sesión</a>
+</nav>
+
+<div class="top" th:fragment="topbar(titulo)">
+    <h1 th:text="${titulo}">Título</h1>
+    <span class="who" th:if="${session.usuarioNombre != null}">
+        <span th:text="${session.usuarioNombre}"></span> · <span th:text="${session.usuarioRol}"></span>
+    </span>
+</div>
+
+</body>
+</html>

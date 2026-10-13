@@ -1,43 +1,41 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <title>SGIMAC — Categorías</title>
-    <style>
-        body { font-family:"Segoe UI",Arial,sans-serif; background:#f4f7fb; margin:0; padding:32px; color:#1f2937; }
-        .card { max-width:760px; margin:0 auto; background:#fff; border:1px solid #dde5f0; border-radius:12px; padding:24px; }
-        table { width:100%; border-collapse:collapse; margin-top:12px; }
-        th, td { text-align:left; padding:8px; border-bottom:1px solid #dde5f0; font-size:14px; }
-        th { font-size:12px; color:#6b7280; text-transform:uppercase; }
-        input { padding:8px 10px; border:1px solid #dde5f0; border-radius:8px; font:inherit; }
-        button { background:#185fa5; color:#fff; border:0; border-radius:8px; padding:8px 14px; font:inherit; font-weight:600; cursor:pointer; }
-        button.link { background:none; color:#b42318; padding:0; font-weight:400; }
-        .error { background:#fee4e2; color:#b42318; padding:10px 12px; border-radius:8px; font-size:13px; margin-top:12px; }
-        form.alta { display:flex; gap:8px; margin-top:14px; flex-wrap:wrap; }
-        form.alta input { flex:1; min-width:160px; }
-    </style>
-</head>
+<head th:replace="~{fragments/layout :: head('Categorías')}"></head>
 <body>
+<div class="app">
+<nav th:replace="~{fragments/layout :: sidebar('categorias')}"></nav>
+<main class="main">
+<div th:replace="~{fragments/layout :: topbar('Categorías')}"></div>
 <div class="card">
-    <h1>Categorías</h1>
-    <div class="error" th:if="${error}" th:text="${error}"></div>
-    <table>
-        <tr><th>Nombre</th><th>Descripción</th><th></th></tr>
-        <tr th:each="c : ${categorias}">
-            <td th:text="${c.nombre}"></td>
-            <td th:text="${c.descripcion}"></td>
-            <td>
-                <form th:action="@{/categorias/{id}/eliminar(id=${c.idCategoria})}" method="post" style="display:inline">
-                    <button class="link" type="submit">Eliminar</button>
-                </form>
-            </td>
-        </tr>
-    </table>
-    <form class="alta" th:action="@{/categorias/nuevo}" method="post">
-        <input type="text" name="nombre" placeholder="Nombre de la categoría" required>
-        <input type="text" name="descripcion" placeholder="Descripción">
-        <button type="submit">Agregar</button>
+    <h2>Agregar categoría</h2>
+    <form th:action="@{/categorias/nuevo}" method="post">
+        <div class="grid">
+            <div><label>Nombre</label><input type="text" name="nombre" placeholder="Nombre de la categoría" required></div>
+            <div><label>Descripción</label><input type="text" name="descripcion" placeholder="Descripción"></div>
+            <div><button class="btn" type="submit">Agregar</button></div>
+        </div>
     </form>
+    <div class="msg err" th:if="${error}" th:text="${error}"></div>
+</div>
+<div class="card">
+    <h2>Listado de categorías</h2>
+    <div class="vacio" th:if="${#lists.isEmpty(categorias)}">No hay categorías registradas.</div>
+    <div class="wrap" th:unless="${#lists.isEmpty(categorias)}">
+        <table>
+            <tr><th>Nombre</th><th>Descripción</th><th></th></tr>
+            <tr th:each="c : ${categorias}">
+                <td th:text="${c.nombre}"></td>
+                <td th:text="${c.descripcion}"></td>
+                <td>
+                    <form class="inline" th:action="@{/categorias/{id}/eliminar(id=${c.idCategoria})}" method="post">
+                        <button class="btn d" type="submit" onclick="return confirm('¿Eliminar esta categoría?')">Eliminar</button>
+                    </form>
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>
+</main>
 </div>
 </body>
 </html>
