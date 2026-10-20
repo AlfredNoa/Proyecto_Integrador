@@ -10,16 +10,25 @@ import java.sql.Timestamp;
 import java.util.List;
 
 /**
- * Implementacion JDBC del DAO de movimientos.
- * Solo inserta el registro; la logica de validar caducidad y stock,
- * y de actualizar la cantidad del lote, vive en el Controlador
- * (movimiento.MovimientoController), como muestra el diagrama secuencial 6.7.
+ * Implementación JDBC de {@link MovimientoDao} para la tabla {@code movimiento}, basada en
+ * {@link org.springframework.jdbc.core.JdbcTemplate}.
+ *
+ * <p>Solo inserta el registro; la lógica de validar caducidad y stock, y de actualizar la cantidad del
+ * lote, vive en {@code MovimientoController} (diagrama secuencial 6.7).
+ *
+ * @author Equipo SGIMAC
+ * @version 1.0
  */
 @Repository
 public class MovimientoDaoImpl implements MovimientoDao {
 
+    /**
+     * Plantilla JDBC de Spring con la que se ejecutan las consultas SQL (inyectada por el
+     * constructor).
+     */
     private final JdbcTemplate jdbc;
 
+    /** Consulta base: une {@code movimiento} con {@code lote}, {@code insumo} y {@code usuario}. */
     private static final String SELECT_BASE =
             "SELECT m.id_movimiento, m.id_lote, l.codigo_qr, i.nombre AS nombre_insumo, " +
             "       m.id_usuario, u.nombres AS nombre_usuario, m.tipo, m.cantidad, m.fecha " +
@@ -28,6 +37,7 @@ public class MovimientoDaoImpl implements MovimientoDao {
             "JOIN insumo i ON i.id_insumo = l.id_insumo " +
             "JOIN usuario u ON u.id_usuario = m.id_usuario ";
 
+    /** Convierte cada fila del {@code ResultSet} en un objeto del modelo. */
     private final RowMapper<Movimiento> mapper = (rs, fila) -> {
         Movimiento m = new Movimiento();
         m.setIdMovimiento(rs.getInt("id_movimiento"));
@@ -43,15 +53,22 @@ public class MovimientoDaoImpl implements MovimientoDao {
         return m;
     };
 
+    /**
+     * Crea el DAO con la plantilla JDBC que Spring inyecta.
+     *
+     * @param jdbc plantilla JDBC configurada con el {@code DataSource} de MySQL
+     */
     public MovimientoDaoImpl(JdbcTemplate jdbc) {
         this.jdbc = jdbc;
     }
 
+    /** {@inheritDoc} */
     @Override
     public List<Movimiento> listar() {
         return jdbc.query(SELECT_BASE + "ORDER BY m.fecha DESC", mapper);
     }
 
+    /** {@inheritDoc} */
     @Override
     public void insertar(Movimiento movimiento) {
         jdbc.update(

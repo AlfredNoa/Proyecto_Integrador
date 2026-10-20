@@ -14,19 +14,32 @@ import java.sql.Timestamp;
 import java.util.List;
 
 /**
- * Implementacion JDBC del DAO de reportes.
+ * Implementación JDBC de {@link ReporteDao} para la tabla {@code reporte}, basada en
+ * {@link org.springframework.jdbc.core.JdbcTemplate}.
+ *
+ * @author Equipo SGIMAC
+ * @version 1.0
  */
 @Repository
 public class ReporteDaoImpl implements ReporteDao {
 
+    /**
+     * Plantilla JDBC de Spring con la que se ejecutan las consultas SQL (inyectada por el
+     * constructor).
+     */
     private final JdbcTemplate jdbc;
 
+    /**
+     * Consulta base: une {@code reporte} con {@code usuario} para traer el nombre de quien lo
+     * generó.
+     */
     private static final String SELECT_BASE =
             "SELECT r.id_reporte, r.id_usuario, u.nombres AS nombre_usuario, " +
             "       r.tipo, r.formato, r.fecha_generacion " +
             "FROM reporte r " +
             "JOIN usuario u ON u.id_usuario = r.id_usuario ";
 
+    /** Convierte cada fila del {@code ResultSet} en un objeto del modelo. */
     private final RowMapper<Reporte> mapper = (rs, fila) -> {
         Reporte r = new Reporte();
         r.setIdReporte(rs.getInt("id_reporte"));
@@ -39,15 +52,22 @@ public class ReporteDaoImpl implements ReporteDao {
         return r;
     };
 
+    /**
+     * Crea el DAO con la plantilla JDBC que Spring inyecta.
+     *
+     * @param jdbc plantilla JDBC configurada con el {@code DataSource} de MySQL
+     */
     public ReporteDaoImpl(JdbcTemplate jdbc) {
         this.jdbc = jdbc;
     }
 
+    /** {@inheritDoc} */
     @Override
     public List<Reporte> listar() {
         return jdbc.query(SELECT_BASE + "ORDER BY r.fecha_generacion DESC", mapper);
     }
 
+    /** {@inheritDoc} */
     @Override
     public int insertar(Reporte reporte) {
         KeyHolder keyHolder = new GeneratedKeyHolder();

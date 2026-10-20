@@ -14,13 +14,22 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Implementacion JDBC del DAO de proveedores.
+ * Implementación JDBC de {@link ProveedorDao} para la tabla {@code proveedor}, basada en
+ * {@link org.springframework.jdbc.core.JdbcTemplate}.
+ *
+ * @author Equipo SGIMAC
+ * @version 1.0
  */
 @Repository
 public class ProveedorDaoImpl implements ProveedorDao {
 
+    /**
+     * Plantilla JDBC de Spring con la que se ejecutan las consultas SQL (inyectada por el
+     * constructor).
+     */
     private final JdbcTemplate jdbc;
 
+    /** Convierte cada fila del {@code ResultSet} en un objeto del modelo. */
     private final RowMapper<Proveedor> mapper = (rs, fila) -> {
         Proveedor p = new Proveedor();
         p.setIdProveedor(rs.getInt("id_proveedor"));
@@ -30,10 +39,16 @@ public class ProveedorDaoImpl implements ProveedorDao {
         return p;
     };
 
+    /**
+     * Crea el DAO con la plantilla JDBC que Spring inyecta.
+     *
+     * @param jdbc plantilla JDBC configurada con el {@code DataSource} de MySQL
+     */
     public ProveedorDaoImpl(JdbcTemplate jdbc) {
         this.jdbc = jdbc;
     }
 
+    /** {@inheritDoc} */
     @Override
     public List<Proveedor> listar() {
         return jdbc.query(
@@ -41,6 +56,7 @@ public class ProveedorDaoImpl implements ProveedorDao {
                 mapper);
     }
 
+    /** {@inheritDoc} */
     @Override
     public Optional<Proveedor> buscarPorId(int idProveedor) {
         List<Proveedor> resultado = jdbc.query(
@@ -49,6 +65,7 @@ public class ProveedorDaoImpl implements ProveedorDao {
         return resultado.stream().findFirst();
     }
 
+    /** {@inheritDoc} */
     @Override
     public int insertar(Proveedor proveedor) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -64,6 +81,7 @@ public class ProveedorDaoImpl implements ProveedorDao {
         return keyHolder.getKey().intValue();
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean actualizar(Proveedor proveedor) {
         int filas = jdbc.update(

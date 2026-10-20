@@ -15,13 +15,25 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Implementacion JDBC del DAO de lotes.
+ * Implementación JDBC de {@link LoteDao} para la tabla {@code lote}, basada en
+ * {@link org.springframework.jdbc.core.JdbcTemplate}.
+ *
+ * <p>Cada consulta une {@code lote} con {@code insumo}, {@code proveedor} y {@code ubicacion} para
+ * traer también sus nombres.
+ *
+ * @author Equipo SGIMAC
+ * @version 1.0
  */
 @Repository
 public class LoteDaoImpl implements LoteDao {
 
+    /**
+     * Plantilla JDBC de Spring con la que se ejecutan las consultas SQL (inyectada por el
+     * constructor).
+     */
     private final JdbcTemplate jdbc;
 
+    /** Consulta base: une {@code lote} con {@code insumo}, {@code proveedor} y {@code ubicacion}. */
     private static final String SELECT_BASE =
             "SELECT l.id_lote, l.id_insumo, i.nombre AS nombre_insumo, i.unidad_medida, " +
             "       l.id_proveedor, p.razon_social, " +
@@ -32,6 +44,7 @@ public class LoteDaoImpl implements LoteDao {
             "JOIN proveedor p ON p.id_proveedor = l.id_proveedor " +
             "JOIN ubicacion u ON u.id_ubicacion = l.id_ubicacion ";
 
+    /** Convierte cada fila del {@code ResultSet} en un objeto del modelo. */
     private final RowMapper<Lote> mapper = (rs, fila) -> {
         Lote l = new Lote();
         l.setIdLote(rs.getInt("id_lote"));
@@ -49,15 +62,26 @@ public class LoteDaoImpl implements LoteDao {
         return l;
     };
 
+    /**
+     * Crea el DAO con la plantilla JDBC que Spring inyecta.
+     *
+     * @param jdbc plantilla JDBC configurada con el {@code DataSource} de MySQL
+     */
     public LoteDaoImpl(JdbcTemplate jdbc) {
         this.jdbc = jdbc;
     }
 
+    /** {@inheritDoc} */
     @Override
     public List<Lote> listar() {
         return jdbc.query(SELECT_BASE + "ORDER BY l.fecha_vencimiento", mapper);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * <p>Filtra con {@code fecha_vencimiento <= DATE_ADD(CURDATE(), INTERVAL ? DAY)}.
+     */
     @Override
     public List<Lote> listarProximosAVencer(int dias) {
         return jdbc.query(
@@ -67,18 +91,21 @@ public class LoteDaoImpl implements LoteDao {
                 mapper, dias);
     }
 
+    /** {@inheritDoc} */
     @Override
     public Optional<Lote> buscarPorId(int idLote) {
         List<Lote> resultado = jdbc.query(SELECT_BASE + "WHERE l.id_lote = ?", mapper, idLote);
         return resultado.stream().findFirst();
     }
 
+    /** {@inheritDoc} */
     @Override
     public Optional<Lote> buscarPorCodigoQr(String codigoQr) {
         List<Lote> resultado = jdbc.query(SELECT_BASE + "WHERE l.codigo_qr = ?", mapper, codigoQr);
         return resultado.stream().findFirst();
     }
 
+    /** {@inheritDoc} */
     @Override
     public int insertar(Lote lote) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -98,6 +125,13 @@ public class LoteDaoImpl implements LoteDao {
         return keyHolder.getKey().intValue();
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * <p>El {@code UPDATE} incluye la condición {@code cantidad_actual + ? >= 0}, de modo que la
+     * cantidad nunca quede negativa aunque dos solicitudes lleguen casi al mismo tiempo (protección
+     * de concurrencia).
+     */
     @Override
     public boolean ajustarCantidad(int idLote, int delta) {
         // La condicion "cantidad_actual + ? >= 0" evita quedar en negativo
@@ -109,6 +143,7 @@ public class LoteDaoImpl implements LoteDao {
         return filas > 0;
     }
 
+    /** {@inheritDoc} */
     @Override
     public int sumarStockVigente(int idInsumo) {
         Integer total = jdbc.queryForObject(

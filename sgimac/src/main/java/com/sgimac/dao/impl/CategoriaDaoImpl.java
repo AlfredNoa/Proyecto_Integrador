@@ -15,22 +15,37 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Implementacion JDBC del DAO de categorias.
+ * Implementación JDBC de {@link CategoriaDao} para la tabla {@code categoria}, basada en
+ * {@link org.springframework.jdbc.core.JdbcTemplate}.
+ *
+ * @author Equipo SGIMAC
+ * @version 1.0
  */
 @Repository
 public class CategoriaDaoImpl implements CategoriaDao {
 
+    /**
+     * Plantilla JDBC de Spring con la que se ejecutan las consultas SQL (inyectada por el
+     * constructor).
+     */
     private final JdbcTemplate jdbc;
 
+    /** Convierte cada fila del {@code ResultSet} en un objeto del modelo. */
     private final RowMapper<Categoria> mapper = (rs, fila) -> new Categoria(
             rs.getInt("id_categoria"),
             rs.getString("nombre"),
             rs.getString("descripcion"));
 
+    /**
+     * Crea el DAO con la plantilla JDBC que Spring inyecta.
+     *
+     * @param jdbc plantilla JDBC configurada con el {@code DataSource} de MySQL
+     */
     public CategoriaDaoImpl(JdbcTemplate jdbc) {
         this.jdbc = jdbc;
     }
 
+    /** {@inheritDoc} */
     @Override
     public List<Categoria> listar() {
         return jdbc.query(
@@ -38,6 +53,7 @@ public class CategoriaDaoImpl implements CategoriaDao {
                 mapper);
     }
 
+    /** {@inheritDoc} */
     @Override
     public Optional<Categoria> buscarPorId(int idCategoria) {
         List<Categoria> resultado = jdbc.query(
@@ -46,6 +62,7 @@ public class CategoriaDaoImpl implements CategoriaDao {
         return resultado.stream().findFirst();
     }
 
+    /** {@inheritDoc} */
     @Override
     public int insertar(Categoria categoria) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -60,6 +77,7 @@ public class CategoriaDaoImpl implements CategoriaDao {
         return keyHolder.getKey().intValue();
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean actualizar(Categoria categoria) {
         int filas = jdbc.update(
@@ -68,6 +86,13 @@ public class CategoriaDaoImpl implements CategoriaDao {
         return filas > 0;
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * <p>Captura la {@code DataIntegrityViolationException} que lanza MySQL cuando la categoría está
+     * referenciada por algún insumo y, en ese caso, devuelve {@code false} en lugar de propagar el
+     * error.
+     */
     @Override
     public boolean eliminar(int idCategoria) {
         try {

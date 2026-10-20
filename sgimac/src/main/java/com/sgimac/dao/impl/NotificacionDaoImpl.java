@@ -10,13 +10,22 @@ import java.sql.Timestamp;
 import java.util.List;
 
 /**
- * Implementacion JDBC del DAO de notificaciones.
+ * Implementación JDBC de {@link NotificacionDao} para la tabla {@code notificacion}, basada en
+ * {@link org.springframework.jdbc.core.JdbcTemplate}.
+ *
+ * @author Equipo SGIMAC
+ * @version 1.0
  */
 @Repository
 public class NotificacionDaoImpl implements NotificacionDao {
 
+    /**
+     * Plantilla JDBC de Spring con la que se ejecutan las consultas SQL (inyectada por el
+     * constructor).
+     */
     private final JdbcTemplate jdbc;
 
+    /** Convierte cada fila del {@code ResultSet} en un objeto del modelo. */
     private final RowMapper<Notificacion> mapper = (rs, fila) -> {
         Notificacion n = new Notificacion();
         n.setIdNotificacion(rs.getInt("id_notificacion"));
@@ -29,10 +38,16 @@ public class NotificacionDaoImpl implements NotificacionDao {
         return n;
     };
 
+    /**
+     * Crea el DAO con la plantilla JDBC que Spring inyecta.
+     *
+     * @param jdbc plantilla JDBC configurada con el {@code DataSource} de MySQL
+     */
     public NotificacionDaoImpl(JdbcTemplate jdbc) {
         this.jdbc = jdbc;
     }
 
+    /** {@inheritDoc} */
     @Override
     public List<Notificacion> listarPorUsuario(int idUsuario) {
         return jdbc.query(
@@ -41,6 +56,7 @@ public class NotificacionDaoImpl implements NotificacionDao {
                 mapper, idUsuario);
     }
 
+    /** {@inheritDoc} */
     @Override
     public int contarNoLeidas(int idUsuario) {
         Integer total = jdbc.queryForObject(
@@ -49,6 +65,7 @@ public class NotificacionDaoImpl implements NotificacionDao {
         return total != null ? total : 0;
     }
 
+    /** {@inheritDoc} */
     @Override
     public void insertar(Notificacion notificacion) {
         jdbc.update(
@@ -56,6 +73,7 @@ public class NotificacionDaoImpl implements NotificacionDao {
                 notificacion.getIdAlerta(), notificacion.getIdUsuario(), notificacion.getMensaje());
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean marcarLeida(int idNotificacion) {
         int filas = jdbc.update(

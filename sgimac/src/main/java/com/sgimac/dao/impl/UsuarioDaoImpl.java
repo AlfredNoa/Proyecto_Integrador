@@ -14,20 +14,32 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Implementacion JDBC del DAO de usuarios, usando JdbcTemplate.
+ * Implementación JDBC de {@link UsuarioDao} para la tabla {@code usuario}, basada en
+ * {@link org.springframework.jdbc.core.JdbcTemplate}.
+ *
+ * <p>Cada consulta hace un {@code JOIN} con {@code rol} para traer también el nombre del rol.
+ *
+ * @author Equipo SGIMAC
+ * @version 1.0
  */
 @Repository
 public class UsuarioDaoImpl implements UsuarioDao {
 
+    /**
+     * Plantilla JDBC de Spring con la que se ejecutan las consultas SQL (inyectada por el
+     * constructor).
+     */
     private final JdbcTemplate jdbc;
 
     // Trae tambien el nombre del rol mediante JOIN, para no depender de otro DAO.
+    /** Consulta base: une {@code usuario} con {@code rol} para traer el nombre del rol. */
     private static final String SELECT_BASE =
             "SELECT u.id_usuario, u.id_rol, r.nombre AS nombre_rol, u.nombres, " +
             "       u.correo, u.contrasena_hash, u.activo " +
             "FROM usuario u " +
             "JOIN rol r ON r.id_rol = u.id_rol ";
 
+    /** Convierte cada fila del {@code ResultSet} en un objeto del modelo. */
     private final RowMapper<Usuario> mapper = (rs, fila) -> {
         Usuario u = new Usuario();
         u.setIdUsuario(rs.getInt("id_usuario"));
@@ -40,15 +52,22 @@ public class UsuarioDaoImpl implements UsuarioDao {
         return u;
     };
 
+    /**
+     * Crea el DAO con la plantilla JDBC que Spring inyecta.
+     *
+     * @param jdbc plantilla JDBC configurada con el {@code DataSource} de MySQL
+     */
     public UsuarioDaoImpl(JdbcTemplate jdbc) {
         this.jdbc = jdbc;
     }
 
+    /** {@inheritDoc} */
     @Override
     public List<Usuario> listar() {
         return jdbc.query(SELECT_BASE + "ORDER BY u.nombres", mapper);
     }
 
+    /** {@inheritDoc} */
     @Override
     public Optional<Usuario> buscarPorId(int idUsuario) {
         List<Usuario> resultado = jdbc.query(
@@ -56,6 +75,7 @@ public class UsuarioDaoImpl implements UsuarioDao {
         return resultado.stream().findFirst();
     }
 
+    /** {@inheritDoc} */
     @Override
     public Optional<Usuario> buscarPorCorreo(String correo) {
         List<Usuario> resultado = jdbc.query(
@@ -63,6 +83,7 @@ public class UsuarioDaoImpl implements UsuarioDao {
         return resultado.stream().findFirst();
     }
 
+    /** {@inheritDoc} */
     @Override
     public int insertar(Usuario usuario) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -81,6 +102,7 @@ public class UsuarioDaoImpl implements UsuarioDao {
         return keyHolder.getKey().intValue();
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean actualizar(Usuario usuario) {
         int filas = jdbc.update(
@@ -90,6 +112,7 @@ public class UsuarioDaoImpl implements UsuarioDao {
         return filas > 0;
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean cambiarEstado(int idUsuario, boolean activo) {
         int filas = jdbc.update(
@@ -98,6 +121,7 @@ public class UsuarioDaoImpl implements UsuarioDao {
         return filas > 0;
     }
 
+    /** {@inheritDoc} */
     @Override
     public List<Usuario> listarPorRol(String nombreRol) {
         return jdbc.query(

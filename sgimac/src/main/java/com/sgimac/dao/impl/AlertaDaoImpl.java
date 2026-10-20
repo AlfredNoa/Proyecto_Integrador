@@ -15,13 +15,28 @@ import java.sql.Types;
 import java.util.List;
 
 /**
- * Implementacion JDBC del DAO de alertas.
+ * Implementación JDBC de {@link AlertaDao} para la tabla {@code alerta}, basada en
+ * {@link org.springframework.jdbc.core.JdbcTemplate}.
+ *
+ * <p>Cada consulta une {@code alerta} con {@code lote} e {@code insumo}, y hace un {@code LEFT JOIN}
+ * con {@code usuario} porque una alerta pendiente aún no tiene quien la atienda.
+ *
+ * @author Equipo SGIMAC
+ * @version 1.0
  */
 @Repository
 public class AlertaDaoImpl implements AlertaDao {
 
+    /**
+     * Plantilla JDBC de Spring con la que se ejecutan las consultas SQL (inyectada por el
+     * constructor).
+     */
     private final JdbcTemplate jdbc;
 
+    /**
+     * Consulta base: une {@code alerta} con {@code lote}, {@code insumo} y (opcionalmente) el
+     * usuario que la atiende.
+     */
     private static final String SELECT_BASE =
             "SELECT a.id_alerta, a.id_lote, l.codigo_qr, l.fecha_vencimiento, i.nombre AS nombre_insumo, " +
             "       a.id_usuario_atiende, ua.nombres AS nombre_usuario_atiende, " +
@@ -31,6 +46,7 @@ public class AlertaDaoImpl implements AlertaDao {
             "JOIN insumo i ON i.id_insumo = l.id_insumo " +
             "LEFT JOIN usuario ua ON ua.id_usuario = a.id_usuario_atiende ";
 
+    /** Convierte cada fila del {@code ResultSet} en un objeto del modelo. */
     private final RowMapper<Alerta> mapper = (rs, fila) -> {
         Alerta a = new Alerta();
         a.setIdAlerta(rs.getInt("id_alerta"));
@@ -50,10 +66,16 @@ public class AlertaDaoImpl implements AlertaDao {
         return a;
     };
 
+    /**
+     * Crea el DAO con la plantilla JDBC que Spring inyecta.
+     *
+     * @param jdbc plantilla JDBC configurada con el {@code DataSource} de MySQL
+     */
     public AlertaDaoImpl(JdbcTemplate jdbc) {
         this.jdbc = jdbc;
     }
 
+    /** {@inheritDoc} */
     @Override
     public List<Alerta> listarPendientes() {
         return jdbc.query(
@@ -62,11 +84,13 @@ public class AlertaDaoImpl implements AlertaDao {
                 mapper);
     }
 
+    /** {@inheritDoc} */
     @Override
     public List<Alerta> listar() {
         return jdbc.query(SELECT_BASE + "ORDER BY a.fecha_generacion DESC", mapper);
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean existePendiente(int idLote, String tipo) {
         Integer total = jdbc.queryForObject(
@@ -75,6 +99,7 @@ public class AlertaDaoImpl implements AlertaDao {
         return total != null && total > 0;
     }
 
+    /** {@inheritDoc} */
     @Override
     public int insertar(Alerta alerta) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -90,6 +115,7 @@ public class AlertaDaoImpl implements AlertaDao {
         return keyHolder.getKey().intValue();
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean marcarAtendida(int idAlerta, int idUsuarioAtiende) {
         int filas = jdbc.update(

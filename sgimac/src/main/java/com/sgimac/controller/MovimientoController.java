@@ -18,25 +18,46 @@ import java.util.Optional;
 /**
  * Controlador (MVC) para el registro de movimientos (entradas y salidas).
  *
- * Implementa la logica del diagrama secuencial 6.7 "Registro de salida de
- * un insumo": valida caducidad, valida stock, registra el movimiento,
- * actualiza la cantidad del lote y, si corresponde, genera una alerta
- * y notifica al personal medico.
+ * <p>Implementa la lógica del diagrama secuencial «Registro de salida de un insumo»: valida la
+ * caducidad, valida el stock, registra el movimiento, actualiza la cantidad del lote y, si
+ * corresponde, genera una alerta y notifica al personal médico.
+ *
+ * @author Equipo SGIMAC
+ * @version 1.0
  */
 @Controller
 @RequestMapping("/movimientos")
 public class MovimientoController {
 
+    /** Nombre del rol al que se notifica cuando se genera una alerta de nivel alto. */
     private static final String ROL_PERSONAL_MEDICO = "Personal Médico";
 
+    /** DAO de movimiento (inyectado por el constructor). */
     private final MovimientoDao movimientoDao;
+    /** DAO de lote (inyectado por el constructor). */
     private final LoteDao loteDao;
+    /** DAO de insumo (inyectado por el constructor). */
     private final InsumoDao insumoDao;
+    /** DAO de alerta (inyectado por el constructor). */
     private final AlertaDao alertaDao;
+    /** DAO de notificacion (inyectado por el constructor). */
     private final NotificacionDao notificacionDao;
+    /** DAO de usuario (inyectado por el constructor). */
     private final UsuarioDao usuarioDao;
+    /** DAO de logauditoria (inyectado por el constructor). */
     private final LogAuditoriaDao logAuditoriaDao;
 
+    /**
+     * Crea el controlador con los DAO que Spring inyecta.
+     *
+     * @param movimientoDao DAO de movimientos
+     * @param loteDao DAO de lotes
+     * @param insumoDao DAO de insumos
+     * @param alertaDao DAO de alertas
+     * @param notificacionDao DAO de notificaciones
+     * @param usuarioDao DAO de usuarios
+     * @param logAuditoriaDao DAO de auditoría
+     */
     public MovimientoController(MovimientoDao movimientoDao, LoteDao loteDao,
                                  InsumoDao insumoDao, AlertaDao alertaDao,
                                  NotificacionDao notificacionDao, UsuarioDao usuarioDao,
@@ -50,12 +71,35 @@ public class MovimientoController {
         this.logAuditoriaDao = logAuditoriaDao;
     }
 
+    /**
+     * Atiende {@code GET /movimientos}: muestra el formulario de registro y el historial de
+     * movimientos.
+     *
+     * @param model modelo de Spring donde se cargan los datos que usa la vista
+     * @return nombre de la vista Thymeleaf ({@code movimientos/lista})
+     */
     @GetMapping
     public String listar(Model model) {
         cargarDatosComunes(model);
         return "movimientos/lista";
     }
 
+    /**
+     * Atiende {@code POST /movimientos/registrar}: registra una entrada o una salida de un lote.
+     *
+     * <p>Pasos: (1) si es una salida y el lote está vencido, se bloquea; (2) si es una salida y la
+     * cantidad supera el stock del lote, se bloquea; (3) se ajusta la cantidad del lote, se guarda
+     * el movimiento y se registra en la auditoría; (4) se evalúan las alertas de caducidad y de
+     * stock bajo.
+     *
+     * @param idLote identificador del lote afectado
+     * @param tipo tipo de movimiento ({@code ENTRADA} o {@code SALIDA})
+     * @param cantidad cantidad de unidades, mayor que cero
+     * @param sesion sesión HTTP del usuario
+     * @param model modelo de Spring donde se cargan los mensajes y los datos de la vista
+     * @return la vista {@code movimientos/lista} con un mensaje de éxito o de error, o redirección
+     *     a {@code /login} si no hay sesión iniciada
+     */
     @PostMapping("/registrar")
     public String registrar(@RequestParam int idLote,
                              @RequestParam String tipo,
@@ -127,10 +171,14 @@ public class MovimientoController {
     }
 
     /**
-     * Replica el bloque "evaluarAlertas(lote)" del diagrama secuencial 6.7:
-     * revisa si el lote esta por vencer y si el insumo quedo bajo su stock
-     * minimo; si es asi, genera la alerta (evitando duplicar una ya
-     * pendiente) y notifica al personal medico cuando el nivel es ALTO.
+     * Replica el bloque {@code evaluarAlertas(lote)} del diagrama secuencial 6.7: revisa si el lote
+     * está por vencer y si el insumo quedó bajo su stock mínimo; si es así, genera la alerta (sin
+     * duplicar una ya pendiente) y, cuando el nivel es alto, notifica al personal médico.
+     *
+     * <p>Niveles de caducidad: ALTO si el lote está vencido o vence en 30 días o menos; MEDIO si vence
+     * en 90 días o menos. La alerta de stock bajo se genera con nivel MEDIO.
+     *
+     * @param idLote identificador del lote recién modificado
      */
     private void evaluarYGenerarAlertas(int idLote) {
         Optional<Lote> loteActualizado = loteDao.buscarPorId(idLote);
@@ -182,6 +230,13 @@ public class MovimientoController {
         }
     }
 
+    /**
+     * Envía una notificación con el mensaje indicado a cada usuario activo con el rol «Personal
+     * Médico».
+     *
+     * @param idAlerta identificador de la alerta que originó la notificación
+     * @param mensaje texto de la notificación
+     */
     private void notificarPersonalMedico(int idAlerta, String mensaje) {
         List<Usuario> personalMedico = usuarioDao.listarPorRol(ROL_PERSONAL_MEDICO);
         for (Usuario medico : personalMedico) {
@@ -193,6 +248,11 @@ public class MovimientoController {
         }
     }
 
+    /**
+     * Carga en el modelo la lista de lotes y el historial de movimientos que necesita la vista.
+     *
+     * @param model modelo de Spring donde se cargan los datos que usa la vista
+     */
     private void cargarDatosComunes(Model model) {
         model.addAttribute("lotes", loteDao.listar());
         model.addAttribute("movimientos", movimientoDao.listar());

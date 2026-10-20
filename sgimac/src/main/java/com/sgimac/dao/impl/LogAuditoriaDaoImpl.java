@@ -10,13 +10,22 @@ import java.sql.Timestamp;
 import java.util.List;
 
 /**
- * Implementacion JDBC del DAO de auditoria.
+ * Implementación JDBC de {@link LogAuditoriaDao} para la tabla {@code log_auditoria}, basada en
+ * {@link org.springframework.jdbc.core.JdbcTemplate}.
+ *
+ * @author Equipo SGIMAC
+ * @version 1.0
  */
 @Repository
 public class LogAuditoriaDaoImpl implements LogAuditoriaDao {
 
+    /**
+     * Plantilla JDBC de Spring con la que se ejecutan las consultas SQL (inyectada por el
+     * constructor).
+     */
     private final JdbcTemplate jdbc;
 
+    /** Convierte cada fila del {@code ResultSet} en un objeto del modelo. */
     private final RowMapper<LogAuditoria> mapper = (rs, fila) -> {
         LogAuditoria log = new LogAuditoria();
         log.setIdLog(rs.getInt("id_log"));
@@ -29,10 +38,16 @@ public class LogAuditoriaDaoImpl implements LogAuditoriaDao {
         return log;
     };
 
+    /**
+     * Crea el DAO con la plantilla JDBC que Spring inyecta.
+     *
+     * @param jdbc plantilla JDBC configurada con el {@code DataSource} de MySQL
+     */
     public LogAuditoriaDaoImpl(JdbcTemplate jdbc) {
         this.jdbc = jdbc;
     }
 
+    /** {@inheritDoc} */
     @Override
     public List<LogAuditoria> listar() {
         return jdbc.query(
@@ -44,6 +59,7 @@ public class LogAuditoriaDaoImpl implements LogAuditoriaDao {
                 mapper);
     }
 
+    /** {@inheritDoc} */
     @Override
     public void registrar(int idUsuario, String accion, String entidad) {
         jdbc.update(
