@@ -54,10 +54,20 @@
             <scope>runtime</scope>
             <optional>true</optional>
         </dependency>
+        <!-- Motor y fuentes del reporte. Plantilla JRXML compatible con JasperReports 6.x. -->
+        <dependency><groupId>net.sf.jasperreports</groupId><artifactId>jasperreports</artifactId><version>6.21.5</version></dependency>
+        <dependency><groupId>net.sf.jasperreports</groupId><artifactId>jasperreports-fonts</artifactId><version>6.21.5</version></dependency>
+        <dependency><groupId>org.springframework.boot</groupId><artifactId>spring-boot-starter-test</artifactId><scope>test</scope></dependency>
     </dependencies>
 
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>3.6.3</version>
+                <configuration><encoding>UTF-8</encoding><docencoding>UTF-8</docencoding><charset>UTF-8</charset></configuration>
+            </plugin>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>

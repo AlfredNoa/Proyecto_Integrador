@@ -1,7 +1,6 @@
 package com.sgimac.controller;
 
 import com.sgimac.dao.*;
-import com.sgimac.model.Reporte;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -10,9 +9,9 @@ import org.springframework.web.bind.annotation.*;
 /**
  * Controlador (MVC) para los reportes del sistema.
  *
- * <p>Muestra los datos en pantalla (inventario, próximos a vencer y movimientos) y registra cada
- * generación en la tabla {@code reporte} con su formato elegido. La exportación real a archivo PDF
- * o Excel no está implementada.
+ * <p>Muestra las consultas de próximos a vencer y movimientos y el historial.
+ * La exportación PDF de inventario y su registro en historial se implementan en
+ * {@link InventarioReporteController}. Los otros tipos conservan su consulta en pantalla.
  *
  * @author Equipo SGIMAC
  * @version 1.0
@@ -57,19 +56,20 @@ public class ReporteController {
      */
     @GetMapping
     public String listar(@RequestParam(defaultValue = "inventario") String tipo, Model model) {
+        if ("inventario".equals(tipo)) return "redirect:/reportes/inventario";
         cargarDatosComunes(model, tipo);
         return "reportes/lista";
     }
 
     /**
-     * Atiende {@code POST /reportes/generar}: registra la generación de un reporte en la base de
-     * datos y en la auditoría.
+     * Atiende {@code POST /reportes/generar}: redirige al reporte de inventario.
+     * Los otros reportes solo admiten consulta y no registran exportaciones ficticias.
      *
      * @param tipo tipo de reporte generado
      * @param formato formato elegido ({@code PDF} o {@code EXCEL})
      * @param sesion sesión HTTP del usuario
      * @param model modelo de Spring donde se cargan los datos que usa la vista
-     * @return la vista {@code reportes/lista} con un mensaje de confirmación, o redirección a
+     * @return la vista {@code reportes/lista} con un mensaje informativo, o redirección a
      *     {@code /login} si no hay sesión iniciada
      */
     @PostMapping("/generar")
@@ -81,17 +81,9 @@ public class ReporteController {
         if (idUsuarioSesion == null) {
             return "redirect:/login";
         }
-        int idUsuario = (int) idUsuarioSesion;
 
-        Reporte reporte = new Reporte();
-        reporte.setIdUsuario(idUsuario);
-        reporte.setTipo(tipo);
-        reporte.setFormato(formato);
-        reporteDao.insertar(reporte);
-
-        logAuditoriaDao.registrar(idUsuario, "Generó reporte (" + formato + ")", "reporte:" + tipo);
-
-        model.addAttribute("mensaje", "Reporte generado y registrado correctamente.");
+        if ("inventario".equals(tipo)) return "redirect:/reportes/inventario";
+        model.addAttribute("mensaje", "Este tipo de reporte dispone únicamente de consulta en pantalla.");
         cargarDatosComunes(model, tipo);
         return "reportes/lista";
     }

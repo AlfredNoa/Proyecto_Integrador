@@ -13,14 +13,7 @@
         <a class="btn" th:classappend="${tipo == 'movimientos'} ? '' : 's'" th:href="@{/reportes(tipo='movimientos')}">Movimientos</a>
     </div>
 
-    <form th:action="@{/reportes/generar}" method="post" style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:6px">
-        <input type="hidden" name="tipo" th:value="${tipo}">
-        <select name="formato" style="width:auto">
-            <option value="PDF">PDF</option>
-            <option value="EXCEL">Excel</option>
-        </select>
-        <button class="btn" type="submit">Generar reporte</button>
-    </form>
+    <p>La exportación PDF está disponible en <a th:href="@{/reportes/inventario}">Inventario por lote</a>.</p>
     <div class="msg ok" th:if="${mensaje}" th:text="${mensaje}"></div>
 
     <div class="wrap" th:if="${tipo == 'inventario'}" style="margin-top:14px">

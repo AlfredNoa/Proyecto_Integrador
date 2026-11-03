@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Reporte de inventario')}"></head>
+<body><div class="app">
+<nav th:replace="~{fragments/layout :: sidebar('reportes')}"></nav>
+<main class="main">
+<div th:replace="~{fragments/layout :: topbar('Reporte de inventario')}"></div>
+<div class="card">
+<h2>Inventario de insumos por lote</h2>
+<p>Consulte el inventario y exporte el mismo resultado a PDF.</p>
+<form method="get" th:action="@{/reportes/inventario}" style="display:flex;gap:16px;align-items:end;flex-wrap:wrap">
+<input type="hidden" name="consultar" value="true">
+<label>Insumo o código de lote<input name="q" maxlength="100" th:value="${q}" placeholder="Todos los insumos"></label>
+<label>Estado de vencimiento<select name="estado">
+<option value="TODOS" th:selected="${estado == 'TODOS'}">Todos</option>
+<option value="VENCIDO" th:selected="${estado == 'VENCIDO'}">Vencido</option>
+<option value="CRITICO" th:selected="${estado == 'CRITICO'}">Crítico (0 a 30 días)</option>
+<option value="POR_VENCER" th:selected="${estado == 'POR_VENCER'}">Por vencer (31 a 90 días)</option>
+<option value="VIGENTE" th:selected="${estado == 'VIGENTE'}">Vigente (más de 90 días)</option>
+</select></label>
+<button class="btn" type="submit">Consultar</button>
+<a class="btn s" th:href="@{/reportes/inventario}">Limpiar</a>
+</form>
+<p class="msg" role="alert" th:if="${error}" th:text="${error}"></p>
+</div>
+<section class="card" th:if="${reporte}">
+<h2>Hospital José Agurto Tello</h2><h3>Reporte 01 · Inventario por lote</h3>
+<p><strong>Fecha de consulta: </strong><span th:text="${reporte.fechaTexto}"></span>
+ · <strong>Generado por: </strong><span th:text="${reporte.generadoPor}"></span></p>
+<p th:text="${reporte.filtros}"></p>
+<p><a class="btn" th:href="@{/reportes/inventario/pdf(id=${reporte.id},descargar=true)}">Exportar PDF</a>
+<a class="btn s" th:href="@{/reportes/inventario/pdf(id=${reporte.id})}" target="_blank" rel="noopener">Abrir vista previa PDF</a></p>
+<p class="vacio" th:if="${reporte.total == 0}">No se encontraron lotes con los filtros seleccionados.</p>
+<div class="wrap" th:if="${reporte.total > 0}"><table>
+<thead><tr><th>Insumo</th><th>Lote</th><th>Vencimiento</th><th>Stock</th><th>Unidad</th><th>Ubicación</th><th>Proveedor</th><th>Estado</th></tr></thead>
+<tbody><tr th:each="f : ${reporte.filas}"><td th:text="${f.insumo}"></td><td th:text="${f.lote}"></td><td th:text="${f.vencimiento}"></td><td th:text="${f.cantidad}"></td><td th:text="${f.unidad}"></td><td th:text="${f.ubicacion}"></td><td th:text="${f.proveedor}"></td><td th:text="${f.estado}"></td></tr></tbody>
+</table></div>
+<p><strong th:text="${reporte.resumen}"></strong></p>
+<p>Las existencias corresponden a la fecha de consulta. Pulse Consultar para actualizarlas.</p>
+<details><summary>Mostrar documento PDF dentro del formulario</summary>
+<iframe title="Vista previa del reporte PDF" loading="lazy" th:src="@{/reportes/inventario/pdf(id=${reporte.id})}" style="width:100%;height:650px;border:1px solid #ccc"></iframe>
+</details></section>
+<div class="card"><a th:href="@{/reportes(tipo='proximos')}">Consultar próximos a vencer</a> · <a th:href="@{/reportes(tipo='movimientos')}">Consultar movimientos</a></div>
+</main></div></body></html>
