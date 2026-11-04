@@ -28,8 +28,11 @@
 <p><strong>Fecha de consulta: </strong><span th:text="${reporte.fechaTexto}"></span>
  · <strong>Generado por: </strong><span th:text="${reporte.generadoPor}"></span></p>
 <p th:text="${reporte.filtros}"></p>
-<p><a class="btn" th:href="@{/reportes/inventario/pdf(id=${reporte.id},descargar=true)}">Exportar PDF</a>
-<a class="btn s" th:href="@{/reportes/inventario/pdf(id=${reporte.id})}" target="_blank" rel="noopener">Abrir vista previa PDF</a></p>
+<form method="post" th:action="@{/reportes/inventario/exportar}" style="display:inline">
+<input type="hidden" name="id" th:value="${reporte.id}">
+<button class="btn" type="submit">Exportar PDF</button>
+</form>
+<p><a class="btn s" th:href="@{/reportes/inventario/pdf(id=${reporte.id})}" target="_blank" rel="noopener">Abrir vista previa PDF</a></p>
 <p class="vacio" th:if="${reporte.total == 0}">No se encontraron lotes con los filtros seleccionados.</p>
 <div class="wrap" th:if="${reporte.total > 0}"><table>
 <thead><tr><th>Insumo</th><th>Lote</th><th>Vencimiento</th><th>Stock</th><th>Unidad</th><th>Ubicación</th><th>Proveedor</th><th>Estado</th></tr></thead>

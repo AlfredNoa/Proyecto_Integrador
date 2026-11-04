@@ -8,12 +8,15 @@ import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 /**
- * Copia inmutable del inventario consultado. Evita que el PDF cambie si el stock se
+ * Datos inmutables del inventario consultado y estado de registro de su exportación. Evita que el PDF cambie si el stock se
  * modifica después de mostrar el formulario. No suma cantidades de unidades distintas.
  * @author Equipo SGIMAC
  * @version 1.1
  */
-public final class InventarioSnapshot {
+public final class InventarioSnapshot implements java.io.Serializable {
+    @java.io.Serial
+    private static final long serialVersionUID = 1L;
+    private boolean exportacionRegistrada;
     private final String id = UUID.randomUUID().toString();
     private final String consulta;
     private final String estado;
@@ -81,6 +84,17 @@ public final class InventarioSnapshot {
             case "POR_VENCER" -> "Por vencer"; case "VIGENTE" -> "Vigente";
             case "TODOS" -> "Todos"; default -> "Sin fecha";
         };
+    }
+    /**
+     * Registra como máximo una exportación exitosa por consulta, incluso con peticiones simultáneas.
+     * Si el registro falla, la marca permanece desactivada para permitir un nuevo intento.
+     * @param registro operación transaccional de historial y auditoría
+     */
+    public synchronized void registrarExportacionUnaVez(Runnable registro) {
+        if (!exportacionRegistrada) {
+            registro.run();
+            exportacionRegistrada = true;
+        }
     }
     private static String seguro(String valor) { return valor == null ? "" : valor; }
     /** @return identificador de la consulta conservada en sesión */

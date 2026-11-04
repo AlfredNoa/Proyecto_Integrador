@@ -63,32 +63,64 @@ public class InventarioReporteController {
         return "reportes/inventario";
     }
     /**
-     * Previsualiza o descarga el PDF de la última consulta. Un identificador anterior se rechaza
-     * para evitar exportar silenciosamente el resultado de otra pestaña.
-     * @param id identificador visible de la consulta
-     * @param descargar true para descargar y registrar la exportación; false para vista previa
-     * @param sesion sesión autenticada que conserva los datos
-     * @return PDF con disposición inline o attachment y sin caché pública
+     * Previsualiza el PDF sin modificar el historial de exportaciones.
+     * @param id identificador de la última consulta
+     * @param sesion sesión autenticada
+     * @return PDF para visualizar en el navegador
      */
     @GetMapping("/pdf")
-    public ResponseEntity<byte[]> pdf(@RequestParam String id,
-            @RequestParam(defaultValue = "false") boolean descargar, HttpSession sesion) {
+    public ResponseEntity<byte[]> pdf(@RequestParam String id, HttpSession sesion) {
+        return responder(obtenerConsulta(id, sesion), false, sesion);
+    }
+
+    /**
+     * Descarga el PDF mediante POST. Registra una única exportación por consulta.
+     * El identificador aleatorio debe coincidir con el de la sesión autenticada.
+     * @param id identificador enviado por el formulario de exportación
+     * @param sesion sesión autenticada
+     * @return PDF descargable, aunque temporalmente falle el historial
+     */
+    @PostMapping("/exportar")
+    public ResponseEntity<byte[]> exportar(@RequestParam String id, HttpSession sesion) {
+        return responder(obtenerConsulta(id, sesion), true, sesion);
+    }
+
+    /** Valida la autenticación y evita utilizar una consulta anterior o de otra sesión. */
+    private InventarioSnapshot obtenerConsulta(String id, HttpSession sesion) {
         if (sesion.getAttribute("usuarioId") == null)
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Inicie sesión para ver el reporte.");
         Object dato = sesion.getAttribute(SNAPSHOT);
         if (!(dato instanceof InventarioSnapshot reporte) || !reporte.getId().equals(id))
             throw new ResponseStatusException(HttpStatus.GONE, "La consulta cambió o expiró. Vuelva a consultar el inventario.");
+        return reporte;
+    }
+
+    /** Genera el PDF y trata por separado un posible fallo del registro de exportación. */
+    private ResponseEntity<byte[]> responder(InventarioSnapshot reporte, boolean descargar, HttpSession sesion) {
+        final byte[] bytes;
         try {
-            byte[] bytes = pdfService.generar(reporte);
-            if (descargar) pdfService.registrarExportacion((int) sesion.getAttribute("usuarioId"));
-            return ResponseEntity.ok().contentType(MediaType.APPLICATION_PDF)
-                    .cacheControl(CacheControl.noStore())
-                    .header(HttpHeaders.CONTENT_DISPOSITION, (descargar ? "attachment" : "inline") + "; filename=Inventario_SGIMAC.pdf")
-                    .body(bytes);
+            bytes = pdfService.generar(reporte);
         } catch (Exception e) {
-            LOG.error("Error al generar o registrar el reporte PDF", e);
+            LOG.error("Error al generar el reporte PDF", e);
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
-                    "No se pudo completar el PDF. Regrese al formulario e intente nuevamente.");
+                    "No se pudo generar el PDF. Regrese al formulario e intente nuevamente.");
         }
+        String registro = "no-aplica";
+        if (descargar) {
+            try {
+                reporte.registrarExportacionUnaVez(() ->
+                        pdfService.registrarExportacion((int) sesion.getAttribute("usuarioId")));
+                registro = "registrado";
+            } catch (org.springframework.dao.DataAccessException | org.springframework.transaction.TransactionException e) {
+                registro = "pendiente";
+                LOG.warn("PDF disponible; no se pudo registrar la exportación de la consulta {}. Se reintentará al descargar de nuevo.", reporte.getId(), e);
+            }
+        }
+        return ResponseEntity.ok().contentType(MediaType.APPLICATION_PDF)
+                .cacheControl(CacheControl.noStore())
+                .header("X-SGIMAC-Registro", registro)
+                .header(HttpHeaders.CONTENT_DISPOSITION,
+                        (descargar ? "attachment" : "inline") + "; filename=Inventario_SGIMAC.pdf")
+                .body(bytes);
     }
 }
