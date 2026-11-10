@@ -13,7 +13,7 @@
    (O desde consola, si tienen Maven: `mvn spring-boot:run`)
 4. En la consola debe aparecer: `[SGIMAC] Conexion a MySQL OK. Roles encontrados: 3`
 5. Abrir http://localhost:8080/login e iniciar sesión con:
-   - Correo: `admin@sgimac.pe`
+   - Correo: `aletor@sgimac.pe`
    - Contraseña: `admin123`
 6. Desde el panel se puede entrar a "Gestionar usuarios" (http://localhost:8080/usuarios)
    para ver, crear y activar/desactivar usuarios.
@@ -68,5 +68,5 @@ salida válida del lote `L-2026-003` (Amoxicilina, crítico, vence en 18
 días) y luego revisar /alertas y, con el usuario médico, /notificaciones.
 
 ## Usuarios de prueba
-- Administrador: `admin@sgimac.pe` / `admin123`
+- Administrador: `aletor@sgimac.pe` / `admin123`
 - Personal Médico (recibe notificaciones): `medico@sgimac.pe` / `admin123`

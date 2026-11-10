@@ -2,21 +2,21 @@
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{fragments/layout :: head('Iniciar sesión')}"></head>
 <body>
-<div class="centro">
+<main class="access"><section class="identity"><div class="brand"><img th:src="@{/img/hospital.png}" alt=""><div><small>CHOSICA</small><strong>Hospital José <br>Agurto Tello</strong></div></div><div class="identity-copy"><span class="kicker">GESTIÓN DE ALMACÉN</span><h2>Inventario de<br>insumos médicos</h2><p>Control de existencias, movimientos y fechas de vencimiento.</p></div></section>
     <div class="login">
         <div class="card">
-            <h1>SGIMAC</h1>
-            <p class="lead">Sistema de Gestión de Insumos Médicos<br>y Alertas de Caducidad<br>Hospital José Agurto Tello</p>
+            <span class="kicker">SGIMAC</span><h1>Iniciar sesión</h1>
+            <p class="lead">Ingresa con tu cuenta del hospital.</p>
             <form th:action="@{/login}" method="post">
-                <label>Correo</label>
-                <input type="email" name="correo" placeholder="usuario@sgimac.pe" required>
-                <label>Contraseña</label>
-                <input type="password" name="contrasena" required>
+                <label for="correo">Correo institucional</label>
+                <input type="email" id="correo" autocomplete="username" name="correo" placeholder="usuario@sgimac.pe" required>
+                <label for="clave">Contraseña</label>
+                <input type="password" id="clave" autocomplete="current-password" name="contrasena" required>
                 <button class="btn" type="submit">Ingresar</button>
             </form>
             <div class="msg err" th:if="${error}" th:text="${error}"></div>
         </div>
     </div>
-</div>
+</main>
 </body>
 </html>

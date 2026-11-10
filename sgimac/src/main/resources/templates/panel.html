@@ -6,7 +6,7 @@
 <nav th:replace="~{fragments/layout :: sidebar('panel')}"></nav>
 <main class="main">
 <div th:replace="~{fragments/layout :: topbar('Panel principal')}"></div>
-<div class="stats">
+<section class="panel-hero"><div><span class="kicker">ALMACÉN HOSPITALARIO</span><h2>Inventario de insumos</h2><p>Consulta las existencias y revisa los lotes que requieren atención.</p></div><a class="hero-action" th:href="@{/reportes/inventario}">Consultar inventario →</a></section><div class="stats">
     <div class="stat"><b th:text="${totalInsumos}">0</b><span>Insumos registrados</span></div>
     <div class="stat"><b style="color:var(--grn)" th:text="${lotesVigentes}">0</b><span>Lotes vigentes</span></div>
     <div class="stat"><b style="color:var(--org)" th:text="${lotesCriticos}">0</b><span>Vencen en 30 días o menos</span></div>

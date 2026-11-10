@@ -44,7 +44,7 @@ Los 3 roles corresponden a funciones reales del sistema. Los 40 movimientos son 
 
 Proveedores, teléfonos y RUC son ficticios; no son datos fiscales válidos. Los registros iniciales de reporte se identifican como `inventario_demo_simulado`: son datos de demostración, no documentos ya emitidos. Los registros iniciales de auditoría también indican que son simulados. Las nuevas descargas generadas desde la aplicación se registran como `inventario`.
 
-Acceso de demostración: `admin@sgimac.pe`, contraseña `admin123`. Todas las cuentas sembradas utilizan esa contraseña de prueba. No utilizar esta carga en una base real.
+Acceso de demostración: `aletor@sgimac.pe`, contraseña `admin123`. Todas las cuentas sembradas utilizan esa contraseña de prueba. No utilizar esta carga en una base real.
 
 ## 3. Compilar e iniciar
 

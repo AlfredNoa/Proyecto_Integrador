@@ -1,0 +1,6 @@
+Hospital José Agurto Tello | Proyecto Maven completo
+1. Detén la instancia anterior y extrae este ZIP en una carpeta vacía.
+2. Abre desde tu IDE la carpeta sgimac que contiene pom.xml.
+3. Si personalizaste la conexión a MySQL, conserva tus ajustes anteriores en src/main/resources/application.properties. Si ya tienes la base funcionando, no ejecutes los scripts SQL.
+4. Con Java 17 y Maven, desde la carpeta del pom.xml: mvn clean spring-boot:run
+5. Abre http://localhost:8080/login y usa Ctrl+F5. Debes ver el escudo, el nombre del hospital y el formulario Iniciar sesión. Si aparece un error de puerto ocupado, detén la otra instancia antes de volver a iniciar.

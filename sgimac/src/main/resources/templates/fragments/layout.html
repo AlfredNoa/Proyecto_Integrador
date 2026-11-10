@@ -4,40 +4,41 @@
 <head th:fragment="head(titulo)">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title th:text="'SGIMAC — ' + ${titulo}">SGIMAC</title>
-    <link rel="stylesheet" th:href="@{/css/sgimac.css}">
+    <title th:text="${titulo} + ' · Hospital José Agurto Tello'">Hospital José Agurto Tello</title>
+    <link rel="stylesheet" th:href="@{/css/sgimac.css(v=hospital1)}">
+    <script defer th:src="@{/js/navegacion.js}"></script>
 </head>
 <body>
 
-<nav class="side" th:fragment="sidebar(activo)">
-    <div class="logo">SGIMAC</div>
-    <div class="sub">Hospital José Agurto Tello</div>
+<nav aria-label="Navegación principal" class="side" th:fragment="sidebar(activo)">
+<div class="brand"><img th:src="@{/img/hospital.png}" alt=""><div><small>CHOSICA</small><strong>Hospital José <br>Agurto Tello</strong></div></div>
+    <button hidden class="navtoggle" type="button" aria-controls="enlaces" aria-expanded="false">Menú ☰</button><div class="navlinks" id="enlaces"><div class="sec">Operaciones</div>
 
-    <a class="nav" th:classappend="${activo == 'panel'} ? 'on'" th:href="@{/panel}">Panel principal</a>
-    <a class="nav" th:classappend="${activo == 'insumos'} ? 'on'" th:href="@{/insumos}">Insumos</a>
-    <a class="nav" th:classappend="${activo == 'lotes'} ? 'on'" th:href="@{/lotes}">Lotes</a>
-    <a class="nav" th:classappend="${activo == 'movimientos'} ? 'on'" th:href="@{/movimientos}">Movimientos</a>
-    <a class="nav" th:classappend="${activo == 'alertas'} ? 'on'" th:href="@{/alertas}">
+    <a class="nav" th:classappend="${activo == 'panel'} ? 'on'" th:href="@{/panel}"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M3 3h7v7H3z M14 3h7v7h-7z M3 14h7v7H3z M14 14h7v7h-7z"/></svg>Panel principal</a>
+    <a class="nav" th:classappend="${activo == 'insumos'} ? 'on'" th:href="@{/insumos}"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M3 7l9-4 9 4v11l-9 4-9-4z M3 7l9 4 9-4 M12 11v11"/></svg>Insumos</a>
+    <a class="nav" th:classappend="${activo == 'lotes'} ? 'on'" th:href="@{/lotes}"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M3 6l9-4 9 4-9 4z M3 11l9 4 9-4 M3 16l9 4 9-4"/></svg>Lotes</a>
+    <a class="nav" th:classappend="${activo == 'movimientos'} ? 'on'" th:href="@{/movimientos}"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M3 7h17l-4-4 M21 17H4l4 4"/></svg>Movimientos</a>
+    <a class="nav" th:classappend="${activo == 'alertas'} ? 'on'" th:href="@{/alertas}"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M12 3L2 20h20z M12 9v5 M12 17v1"/></svg>
         Alertas
         <span class="b red" th:if="${alertasPendientes != null and alertasPendientes > 0}" th:text="${alertasPendientes}"></span>
     </a>
-    <a class="nav" th:classappend="${activo == 'notificaciones'} ? 'on'" th:href="@{/notificaciones}">
+    <a class="nav" th:classappend="${activo == 'notificaciones'} ? 'on'" th:href="@{/notificaciones}"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M5 16h14l-2-4V9a5 5 0 0 0-10 0v3z M10 19h4"/></svg>
         Notificaciones
         <span class="b blu" th:if="${notificacionesNoLeidas != null and notificacionesNoLeidas > 0}" th:text="${notificacionesNoLeidas}"></span>
     </a>
-    <a class="nav" th:classappend="${activo == 'reportes'} ? 'on'" th:href="@{/reportes}">Reportes</a>
+    <a class="nav" th:classappend="${activo == 'reportes'} ? 'on'" th:href="@{/reportes}"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M5 3h10l4 4v14H5z M8 16h8 M8 12h5"/></svg>Reportes</a>
 
     <div class="sec">Catálogos</div>
-    <a class="nav" th:classappend="${activo == 'categorias'} ? 'on'" th:href="@{/categorias}">Categorías</a>
-    <a class="nav" th:classappend="${activo == 'proveedores'} ? 'on'" th:href="@{/proveedores}">Proveedores</a>
-    <a class="nav" th:classappend="${activo == 'ubicaciones'} ? 'on'" th:href="@{/ubicaciones}">Ubicaciones</a>
+    <a class="nav" th:classappend="${activo == 'categorias'} ? 'on'" th:href="@{/categorias}"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M3 4h8l10 10-7 7L3 10z M7 7h1"/></svg>Categorías</a>
+    <a class="nav" th:classappend="${activo == 'proveedores'} ? 'on'" th:href="@{/proveedores}"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M2 6h13v11H2z M15 10h4l3 4v3h-7 M6 18v2 M18 18v2"/></svg>Proveedores</a>
+    <a class="nav" th:classappend="${activo == 'ubicaciones'} ? 'on'" th:href="@{/ubicaciones}"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M12 21s7-7 7-12a7 7 0 0 0-14 0c0 5 7 12 7 12z M10 9a2 2 0 1 0 4 0 2 2 0 1 0-4 0"/></svg>Ubicaciones</a>
 
     <div class="sec">Administración</div>
-    <a class="nav" th:classappend="${activo == 'usuarios'} ? 'on'" th:href="@{/usuarios}">Usuarios</a>
-    <a class="nav" th:classappend="${activo == 'auditoria'} ? 'on'" th:href="@{/auditoria}">Auditoría</a>
+    <a class="nav" th:classappend="${activo == 'usuarios'} ? 'on'" th:href="@{/usuarios}"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M8 9a4 4 0 1 0 8 0 4 4 0 1 0-8 0 M4 21a8 8 0 0 1 16 0"/></svg>Usuarios</a>
+    <a class="nav" th:classappend="${activo == 'auditoria'} ? 'on'" th:href="@{/auditoria}"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M5 4h14v17H5z M8 9h8 M8 13h8 M8 17h5"/></svg>Auditoría</a>
 
-    <a class="nav out" th:href="@{/logout}">Cerrar sesión</a>
-</nav>
+    <a class="nav out" th:href="@{/logout}"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M9 4H4v16h5 M9 12h12l-4-4 M21 12l-4 4"/></svg>Cerrar sesión</a>
+</div></nav>
 
 <div class="top" th:fragment="topbar(titulo)">
     <h1 th:text="${titulo}">Título</h1>
