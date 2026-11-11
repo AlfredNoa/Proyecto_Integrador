@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
  *
  * <p>Muestra las consultas de próximos a vencer y movimientos y el historial.
  * La exportación PDF de inventario y su registro en historial se implementan en
- * {@link InventarioReporteController}. Los otros tipos conservan su consulta en pantalla.
+ * {@link InventarioReporteController}. Los informes 02 y 03 se atienden en {@link OperativoReporteController}.
  *
  * @author Equipo SGIMAC
  * @version 1.0
@@ -56,6 +56,7 @@ public class ReporteController {
      */
     @GetMapping
     public String listar(@RequestParam(defaultValue = "inventario") String tipo, Model model) {
+        if ("movimientos".equals(tipo) || "alertas".equals(tipo)) return "redirect:/reportes/" + tipo;
         if ("inventario".equals(tipo)) return "redirect:/reportes/inventario";
         cargarDatosComunes(model, tipo);
         return "reportes/lista";
@@ -63,7 +64,7 @@ public class ReporteController {
 
     /**
      * Atiende {@code POST /reportes/generar}: redirige al reporte de inventario.
-     * Los otros reportes solo admiten consulta y no registran exportaciones ficticias.
+     * Los informes operativos redirigen a sus formularios.
      *
      * @param tipo tipo de reporte generado
      * @param formato formato elegido ({@code PDF} o {@code EXCEL})
@@ -82,6 +83,7 @@ public class ReporteController {
             return "redirect:/login";
         }
 
+        if ("movimientos".equals(tipo) || "alertas".equals(tipo)) return "redirect:/reportes/" + tipo;
         if ("inventario".equals(tipo)) return "redirect:/reportes/inventario";
         model.addAttribute("mensaje", "Este tipo de reporte dispone únicamente de consulta en pantalla.");
         cargarDatosComunes(model, tipo);

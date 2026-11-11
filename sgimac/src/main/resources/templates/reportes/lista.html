@@ -13,7 +13,7 @@
         <a class="btn" th:classappend="${tipo == 'movimientos'} ? '' : 's'" th:href="@{/reportes(tipo='movimientos')}">Movimientos</a>
     </div>
 
-    <p>La exportación PDF está disponible en <a th:href="@{/reportes/inventario}">Inventario por lote</a>.</p>
+    <nav th:replace="~{reportes/selector :: selector('proximos')}"></nav>
     <div class="msg ok" th:if="${mensaje}" th:text="${mensaje}"></div>
 
     <div class="wrap" th:if="${tipo == 'inventario'}" style="margin-top:14px">

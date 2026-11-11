@@ -1,0 +1,17 @@
+<!DOCTYPE html><html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Reporte 03 · Seguimiento de alertas de inventario')}"></head><body><div class="app">
+<nav th:replace="~{fragments/layout :: sidebar('reportes')}"></nav><main class="main">
+<div th:replace="~{fragments/layout :: topbar('Reportes de almacén')}"></div><nav th:replace="~{reportes/selector :: selector('alertas')}"></nav>
+<section class="card"><h2>Reporte 03 · Seguimiento de alertas de inventario</h2><p>Consulta las alertas pendientes y las atendidas, junto con el responsable de su atención.</p>
+<form method="get" th:action="@{/reportes/alertas}"><input type="hidden" name="consultar" value="true"><div class="grid"><label>Tipo de alerta<select name="tipo"><option value="TODOS" th:selected="${tipo == 'TODOS'}">Todos</option><option value="CADUCIDAD" th:selected="${tipo == 'CADUCIDAD'}">Caducidad</option><option value="STOCK_BAJO" th:selected="${tipo == 'STOCK_BAJO'}">Stock bajo</option></select></label><label>Nivel<select name="nivel"><option value="TODOS" th:selected="${nivel == 'TODOS'}">Todos</option><option value="BAJO" th:selected="${nivel == 'BAJO'}">Bajo</option><option value="MEDIO" th:selected="${nivel == 'MEDIO'}">Medio</option><option value="ALTO" th:selected="${nivel == 'ALTO'}">Alto</option></select></label><label>Estado<select name="estado"><option value="TODOS" th:selected="${estado == 'TODOS'}">Todos</option><option value="PENDIENTE" th:selected="${estado == 'PENDIENTE'}">Pendiente</option><option value="ATENDIDA" th:selected="${estado == 'ATENDIDA'}">Atendida</option></select></label></div>
+<div class="actions"><button class="btn">Consultar</button><a class="btn s" th:href="@{/reportes/alertas}">Limpiar</a></div></form>
+<p class="msg err" role="alert" th:if="${error}" th:text="${error}"></p></section>
+<section class="card" th:if="${reporte}"><h2>Resultado de la consulta</h2>
+<p><span th:text="${reporte.fecha}"></span> · <span th:text="${reporte.usuario}"></span></p>
+<p th:text="${reporte.filtros}"></p><p><strong th:text="${reporte.resumen}"></strong></p>
+<div class="wrap" th:unless="${#lists.isEmpty(reporte.filas)}"><table><thead><tr><th scope="col">Generación</th><th scope="col">Insumo</th><th scope="col">Lote</th><th scope="col">Tipo de alerta</th><th scope="col">Nivel</th><th scope="col">Estado</th><th scope="col">Atendida por</th></tr></thead><tbody><tr th:each="f : ${reporte.filas}"><td th:text="${f.fecha}"></td><td th:text="${f.insumo}"></td><td th:text="${f.lote}"></td><td th:text="${f.tipo}"></td><td th:text="${f.nivel}"></td><td th:text="${f.estado}"></td><td th:text="${f.responsable}"></td></tr></tbody></table></div>
+<p class="vacio" th:if="${#lists.isEmpty(reporte.filas)}">No se encontraron registros con estos filtros.</p>
+<div class="actions"><form method="post" th:action="@{/reportes/alertas/exportar}"><input type="hidden" name="id" th:value="${reporte.id}"><button class="btn">Exportar PDF</button></form>
+<a class="btn s" target="_blank" rel="noopener" th:href="@{/reportes/alertas/pdf(id=${reporte.id})}">Abrir vista previa PDF</a></div>
+<details><summary>Mostrar PDF en el formulario</summary><iframe title="Vista previa del reporte" loading="lazy" style="width:100%;height:65vh;border:0" th:src="@{/reportes/alertas/pdf(id=${reporte.id})}"></iframe></details>
+</section></main></div></body></html>

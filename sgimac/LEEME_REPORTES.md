@@ -28,21 +28,19 @@ Conteos al terminar la carga:
 | Tabla | Filas |
 |---|---:|
 | rol | 3 |
-| usuario | 20 |
-| categoria | 20 |
-| proveedor | 20 |
-| ubicacion | 20 |
-| insumo | 20 |
-| lote | 20 |
-| movimiento | 40 |
-| alerta | 20 |
-| notificacion | 20 |
-| reporte | 20 |
-| log_auditoria | 20 |
+| usuario | 50 |
+| categoria | 50 |
+| proveedor | 50 |
+| ubicacion | 50 |
+| insumo | 50 |
+| lote | 50 |
+| movimiento | 100 |
+| alerta | 50 |
+| notificacion | 50 |
+| reporte | 50 |
+| log_auditoria | 50 |
 
-Los 3 roles corresponden a funciones reales del sistema. Los 40 movimientos son una entrada y una salida por cada lote; su diferencia coincide con el stock. La última consulta del script debe devolver cero inconsistencias. Las fechas se calculan respecto del día de carga: inicialmente habrá cinco lotes en cada estado de vencimiento. Las salidas de prueba son anteriores al vencimiento. El stock es variado. Hay 15 alertas de caducidad y 5 de stock bajo, cada una justificada por los datos. Los insumos 1 a 4 tienen dos lotes; los insumos 5 a 16 tienen uno; los insumos 17 a 20 están en el catálogo pero aún no tienen recepciones. Se mantienen exactamente 20 lotes. Todos los nombres de personas y empresas son ficticios.
-
-Proveedores, teléfonos y RUC son ficticios; no son datos fiscales válidos. Los registros iniciales de reporte se identifican como `inventario_demo_simulado`: son datos de demostración, no documentos ya emitidos. Los registros iniciales de auditoría también indican que son simulados. Las nuevas descargas generadas desde la aplicación se registran como `inventario`.
+Se mantienen los tres roles aceptados. Hay dos movimientos por lote; la diferencia entre sus cantidades coincide con las existencias. La carga es académica, incluidas las identidades y el historial. Las fechas de vencimiento se calculan a partir del día de ejecución.
 
 Acceso de demostración: `aletor@sgimac.pe`, contraseña `admin123`. Todas las cuentas sembradas utilizan esa contraseña de prueba. No utilizar esta carga en una base real.
 
@@ -61,7 +59,7 @@ Abre `http://localhost:8080`, inicia sesión y selecciona **Reportes**. Se abre 
 
 ## 4. Comprobar la entrega
 
-1. Sin filtros: comprobar 20 lotes y cinco por cada estado, si se consulta el mismo día de carga y el equipo y MySQL usan la misma fecha local.
+1. Sin filtros: comprobar 50 lotes: 12 vencidos, 13 críticos, 14 por vencer y 11 vigentes, si se consulta el mismo día de carga y el equipo y MySQL usan la misma fecha local.
 2. Buscar `LOT-001`: verificar un solo lote. Buscar un texto inexistente: verificar el mensaje sin resultados, también en PDF.
 3. Seleccionar cada estado y comparar las filas de la pantalla y el PDF. Revisar todas las páginas, acentos y columnas.
 4. Confirmar que la primera descarga exitosa de una consulta añade un registro `inventario` y su auditoría. Las descargas posteriores de esa misma consulta no duplican el historial; una nueva consulta permite un nuevo registro. La vista previa GET no registra nada; el botón Exportar PDF envía POST. Si falla la base al registrar, el PDF se entrega y se escribe una advertencia en el log; la cabecera X-SGIMAC-Registro indica pendiente. Descargar de nuevo reintenta el registro. Esta deduplicación se realiza en la sesión de una única instancia de la aplicación, suficiente para la demostración local.

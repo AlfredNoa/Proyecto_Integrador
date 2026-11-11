@@ -1,0 +1,5 @@
+<!DOCTYPE html><html lang="es" xmlns:th="http://www.thymeleaf.org"><body><nav aria-label="Elegir reporte" class="tabs" th:fragment="selector(actual)">
+<a class="btn" th:classappend="${actual != 'inventario'} ? 's'" th:href="@{/reportes/inventario}">01 · Inventario</a>
+<a class="btn" th:classappend="${actual != 'movimientos'} ? 's'" th:href="@{/reportes/movimientos}">02 · Movimientos</a>
+<a class="btn" th:classappend="${actual != 'alertas'} ? 's'" th:href="@{/reportes/alertas}">03 · Alertas</a>
+</nav></body></html>

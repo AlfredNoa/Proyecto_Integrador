@@ -1,0 +1,205 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="movimientos" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="790" leftMargin="26" rightMargin="26" topMargin="24" bottomMargin="24" whenNoDataType="AllSectionsNoDetail">
+  <style name="Base" isDefault="true" fontName="DejaVu Sans" fontSize="9" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+  <parameter name="FECHA" class="java.lang.String"/>
+  <parameter name="USUARIO" class="java.lang.String"/>
+  <parameter name="FILTROS" class="java.lang.String"/>
+  <parameter name="RESUMEN" class="java.lang.String"/>
+  <parameter name="LOGO" class="java.io.InputStream"/>
+  <field name="fecha" class="java.lang.String"/>
+  <field name="insumo" class="java.lang.String"/>
+  <field name="lote" class="java.lang.String"/>
+  <field name="tipo" class="java.lang.String"/>
+  <field name="cantidad" class="java.lang.String"/>
+  <field name="unidad" class="java.lang.String"/>
+  <field name="usuario" class="java.lang.String"/>
+  <title>
+    <band height="105">
+      <staticText>
+        <reportElement x="75" y="0" width="715" height="26"/>
+        <textElement verticalAlignment="Middle">
+          <font size="17" isBold="true"/>
+        </textElement>
+        <text>Hospital José Agurto Tello</text>
+      </staticText>
+      <staticText>
+        <reportElement x="75" y="29" width="715" height="23"/>
+        <textElement verticalAlignment="Middle">
+          <font size="13" isBold="true"/>
+        </textElement>
+        <text>Reporte 02 · Movimientos de almacén por período</text>
+      </staticText>
+      <textField>
+        <reportElement x="0" y="55" width="790" height="20"/>
+        <textElement verticalAlignment="Middle">
+          <font size="9"/>
+        </textElement>
+        <textFieldExpression>"Fecha de consulta: " + $P{FECHA} + "   |   Generado por: " + $P{USUARIO}</textFieldExpression>
+      </textField>
+      <textField textAdjust="StretchHeight">
+        <reportElement x="0" y="77" width="790" height="26"/>
+        <textElement verticalAlignment="Middle">
+          <font size="9"/>
+        </textElement>
+        <textFieldExpression>$P{FILTROS}</textFieldExpression>
+      </textField>
+      <image scaleImage="RetainShape" hAlign="Center" vAlign="Middle">
+        <reportElement x="0" y="0" width="65" height="51"/>
+        <imageExpression>$P{LOGO}</imageExpression>
+      </image>
+    </band>
+  </title>
+  <pageHeader>
+    <band height="22">
+      <staticText>
+        <reportElement x="0" y="0" width="790" height="20"/>
+        <textElement verticalAlignment="Middle">
+          <font size="10" isBold="true"/>
+        </textElement>
+        <text>Detalle de movimientos</text>
+      </staticText>
+    </band>
+  </pageHeader>
+  <columnHeader>
+    <band height="25">
+      <staticText>
+        <reportElement x="0" y="0" width="105" height="25" mode="Opaque" backcolor="#34337A" forecolor="#FFFFFF"/>
+        <textElement verticalAlignment="Middle">
+          <font size="9" isBold="true"/>
+        </textElement>
+        <text>Fecha y hora</text>
+      </staticText>
+      <staticText>
+        <reportElement x="105" y="0" width="178" height="25" mode="Opaque" backcolor="#34337A" forecolor="#FFFFFF"/>
+        <textElement verticalAlignment="Middle">
+          <font size="9" isBold="true"/>
+        </textElement>
+        <text>Insumo</text>
+      </staticText>
+      <staticText>
+        <reportElement x="283" y="0" width="90" height="25" mode="Opaque" backcolor="#34337A" forecolor="#FFFFFF"/>
+        <textElement verticalAlignment="Middle">
+          <font size="9" isBold="true"/>
+        </textElement>
+        <text>Lote</text>
+      </staticText>
+      <staticText>
+        <reportElement x="373" y="0" width="91" height="25" mode="Opaque" backcolor="#34337A" forecolor="#FFFFFF"/>
+        <textElement verticalAlignment="Middle">
+          <font size="9" isBold="true"/>
+        </textElement>
+        <text>Movimiento</text>
+      </staticText>
+      <staticText>
+        <reportElement x="464" y="0" width="62" height="25" mode="Opaque" backcolor="#34337A" forecolor="#FFFFFF"/>
+        <textElement verticalAlignment="Middle">
+          <font size="9" isBold="true"/>
+        </textElement>
+        <text>Cantidad</text>
+      </staticText>
+      <staticText>
+        <reportElement x="526" y="0" width="85" height="25" mode="Opaque" backcolor="#34337A" forecolor="#FFFFFF"/>
+        <textElement verticalAlignment="Middle">
+          <font size="9" isBold="true"/>
+        </textElement>
+        <text>Unidad</text>
+      </staticText>
+      <staticText>
+        <reportElement x="611" y="0" width="179" height="25" mode="Opaque" backcolor="#34337A" forecolor="#FFFFFF"/>
+        <textElement verticalAlignment="Middle">
+          <font size="9" isBold="true"/>
+        </textElement>
+        <text>Registrado por</text>
+      </staticText>
+    </band>
+  </columnHeader>
+  <detail>
+    <band height="42" splitType="Stretch">
+      <textField textAdjust="StretchHeight">
+        <reportElement x="3" y="2" width="99" height="36"/>
+        <textElement verticalAlignment="Middle">
+          <font size="8"/>
+        </textElement>
+        <textFieldExpression>$F{fecha}</textFieldExpression>
+      </textField>
+      <textField textAdjust="StretchHeight">
+        <reportElement x="108" y="2" width="172" height="36"/>
+        <textElement verticalAlignment="Middle">
+          <font size="8"/>
+        </textElement>
+        <textFieldExpression>$F{insumo}</textFieldExpression>
+      </textField>
+      <textField textAdjust="StretchHeight">
+        <reportElement x="286" y="2" width="84" height="36"/>
+        <textElement verticalAlignment="Middle">
+          <font size="8"/>
+        </textElement>
+        <textFieldExpression>$F{lote}</textFieldExpression>
+      </textField>
+      <textField textAdjust="StretchHeight">
+        <reportElement x="376" y="2" width="85" height="36"/>
+        <textElement verticalAlignment="Middle">
+          <font size="8"/>
+        </textElement>
+        <textFieldExpression>$F{tipo}</textFieldExpression>
+      </textField>
+      <textField textAdjust="StretchHeight">
+        <reportElement x="467" y="2" width="56" height="36"/>
+        <textElement verticalAlignment="Middle">
+          <font size="8"/>
+        </textElement>
+        <textFieldExpression>$F{cantidad}</textFieldExpression>
+      </textField>
+      <textField textAdjust="StretchHeight">
+        <reportElement x="529" y="2" width="79" height="36"/>
+        <textElement verticalAlignment="Middle">
+          <font size="8"/>
+        </textElement>
+        <textFieldExpression>$F{unidad}</textFieldExpression>
+      </textField>
+      <textField textAdjust="StretchHeight">
+        <reportElement x="614" y="2" width="173" height="36"/>
+        <textElement verticalAlignment="Middle">
+          <font size="8"/>
+        </textElement>
+        <textFieldExpression>$F{usuario}</textFieldExpression>
+      </textField>
+    </band>
+  </detail>
+  <pageFooter>
+    <band height="23">
+      <textField>
+        <reportElement x="0" y="0" width="130" height="20"/>
+        <textElement verticalAlignment="Middle">
+          <font size="9"/>
+        </textElement>
+        <textFieldExpression>"Página " + $V{PAGE_NUMBER}</textFieldExpression>
+      </textField>
+      <staticText>
+        <reportElement x="140" y="0" width="650" height="20"/>
+        <textElement verticalAlignment="Middle">
+          <font size="8" isBold="false"/>
+        </textElement>
+        <text>Hospital José Agurto Tello · Gestión de almacén</text>
+      </staticText>
+    </band>
+  </pageFooter>
+  <summary>
+    <band height="65">
+      <textField>
+        <reportElement x="0" y="0" width="790" height="25"/>
+        <textElement verticalAlignment="Middle">
+          <font size="10"/>
+        </textElement>
+        <textFieldExpression>$P{RESUMEN}</textFieldExpression>
+      </textField>
+      <textField>
+        <reportElement x="0" y="31" width="790" height="25"/>
+        <textElement verticalAlignment="Middle">
+          <font size="10"/>
+        </textElement>
+        <textFieldExpression>$V{REPORT_COUNT} == 0 ? "No se encontraron registros con estos filtros." : "Fin del informe."</textFieldExpression>
+      </textField>
+    </band>
+  </summary>
+</jasperReport>

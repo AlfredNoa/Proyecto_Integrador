@@ -1,0 +1,17 @@
+<!DOCTYPE html><html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Reporte 02 · Movimientos de almacén por período')}"></head><body><div class="app">
+<nav th:replace="~{fragments/layout :: sidebar('reportes')}"></nav><main class="main">
+<div th:replace="~{fragments/layout :: topbar('Reportes de almacén')}"></div><nav th:replace="~{reportes/selector :: selector('movimientos')}"></nav>
+<section class="card"><h2>Reporte 02 · Movimientos de almacén por período</h2><p>Puedes dejar las fechas vacías para consultar todo el historial.</p>
+<form method="get" th:action="@{/reportes/movimientos}"><input type="hidden" name="consultar" value="true"><div class="grid"><label>Desde<input type="date" name="desde" th:value="${desde}"></label><label>Hasta<input type="date" name="hasta" th:value="${hasta}"></label><label>Movimiento<select name="tipo"><option value="TODOS" th:selected="${tipo == 'TODOS'}">Todos</option><option value="ENTRADA" th:selected="${tipo == 'ENTRADA'}">Entrada</option><option value="SALIDA" th:selected="${tipo == 'SALIDA'}">Salida</option></select></label></div>
+<div class="actions"><button class="btn">Consultar</button><a class="btn s" th:href="@{/reportes/movimientos}">Limpiar</a></div></form>
+<p class="msg err" role="alert" th:if="${error}" th:text="${error}"></p></section>
+<section class="card" th:if="${reporte}"><h2>Resultado de la consulta</h2>
+<p><span th:text="${reporte.fecha}"></span> · <span th:text="${reporte.usuario}"></span></p>
+<p th:text="${reporte.filtros}"></p><p><strong th:text="${reporte.resumen}"></strong></p>
+<div class="wrap" th:unless="${#lists.isEmpty(reporte.filas)}"><table><thead><tr><th scope="col">Fecha y hora</th><th scope="col">Insumo</th><th scope="col">Lote</th><th scope="col">Movimiento</th><th scope="col">Cantidad</th><th scope="col">Unidad</th><th scope="col">Registrado por</th></tr></thead><tbody><tr th:each="f : ${reporte.filas}"><td th:text="${f.fecha}"></td><td th:text="${f.insumo}"></td><td th:text="${f.lote}"></td><td th:text="${f.tipo}"></td><td th:text="${f.cantidad}"></td><td th:text="${f.unidad}"></td><td th:text="${f.usuario}"></td></tr></tbody></table></div>
+<p class="vacio" th:if="${#lists.isEmpty(reporte.filas)}">No se encontraron registros con estos filtros.</p>
+<div class="actions"><form method="post" th:action="@{/reportes/movimientos/exportar}"><input type="hidden" name="id" th:value="${reporte.id}"><button class="btn">Exportar PDF</button></form>
+<a class="btn s" target="_blank" rel="noopener" th:href="@{/reportes/movimientos/pdf(id=${reporte.id})}">Abrir vista previa PDF</a></div>
+<details><summary>Mostrar PDF en el formulario</summary><iframe title="Vista previa del reporte" loading="lazy" style="width:100%;height:65vh;border:0" th:src="@{/reportes/movimientos/pdf(id=${reporte.id})}"></iframe></details>
+</section></main></div></body></html>

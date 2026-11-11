@@ -61,9 +61,14 @@ public class InventarioPdfService {
      */
     @Transactional
     public void registrarExportacion(int usuarioId) {
+        registrarExportacion(usuarioId, "inventario");
+    }
+    /** Guarda el tipo de informe descargado y su asiento de auditoría en una transacción. */
+    @Transactional
+    public void registrarExportacion(int usuarioId, String tipo) {
         Reporte reporte = new Reporte(); reporte.setIdUsuario(usuarioId);
-        reporte.setTipo("inventario"); reporte.setFormato("PDF");
+        reporte.setTipo(tipo); reporte.setFormato("PDF");
         int id = reporteDao.insertar(reporte);
-        auditoriaDao.registrar(usuarioId, "Exportó inventario PDF", "reporte:" + id);
+        auditoriaDao.registrar(usuarioId, "Exportó " + tipo + " PDF", "reporte:" + id);
     }
 }
