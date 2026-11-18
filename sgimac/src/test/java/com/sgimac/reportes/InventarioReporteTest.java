@@ -36,7 +36,7 @@ class InventarioReporteTest {
             JasperReport plantilla = JasperCompileManager.compileReport(Objects.requireNonNull(entrada));
             InventarioSnapshot s = new InventarioSnapshot(lotes, "", "TODOS", "Prueba", LocalDateTime.now());
             JasperPrint impreso = JasperFillManager.fillReport(plantilla,
-                Map.of("FECHA", s.getFechaTexto(), "USUARIO", s.getGeneradoPor(), "FILTROS", s.getFiltros(), "RESUMEN", s.getResumen()),
+                new HashMap<>(Map.of("FECHA", s.getFechaTexto(), "USUARIO", s.getGeneradoPor(), "FILTROS", s.getFiltros(), "RESUMEN", s.getResumen())),
                 new JRMapCollectionDataSource(s.getFilas()));
             assertTrue(impreso.getPages().size() >= 2, "Veinte filas deben paginar sin perderse");
             long filas = impreso.getPages().stream().flatMap(p -> p.getElements().stream())

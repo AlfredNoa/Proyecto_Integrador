@@ -24,6 +24,19 @@ public final class ConsultaOperativa implements Serializable {
         resumen = movimientos ? "Movimientos: " + filas.size() + " | Entradas: " + n + " | Salidas: " + (filas.size()-n)
                               : "Alertas: " + filas.size() + " | Pendientes: " + n + " | Atendidas: " + (filas.size()-n);
     }
+    /**
+     * Conserva un resultado de consulta con un resumen específico.
+     * @param usuario usuario que ejecutó la consulta
+     * @param filtros criterios usados
+     * @param datos filas inmutables para pantalla y PDF
+     * @param resumen descripción del total obtenido
+     */
+    public ConsultaOperativa(String usuario, String filtros, List<Map<String, ?>> datos, String resumen) {
+        this.usuario=usuario; this.filtros=filtros; this.resumen=resumen;
+        List<Map<String, ?>> copia=new ArrayList<>();
+        for (Map<String, ?> fila:datos) copia.add(Map.copyOf(fila));
+        this.filas=List.copyOf(copia);
+    }
     /** Registra una sola descarga por consulta; permite reintentar si falla el historial. */
     public synchronized void registrarExportacionUnaVez(Runnable registro) {
         if (!registrada) { registro.run(); registrada = true; }

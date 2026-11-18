@@ -1,0 +1,12 @@
+<!DOCTYPE html><html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Consulta 01 · Lotes por vencimiento')}"></head>
+<body><div class="app"><nav th:replace="~{fragments/layout :: sidebar('consultas')}"></nav>
+<main class="main"><div th:replace="~{fragments/layout :: topbar('Consultas a la base de datos')}"></div>
+<section class="card"><h2>Resultado de Consulta 01</h2><p>Lotes por insumo y fecha de vencimiento</p>
+<p th:text="${reporte.filtros}"></p><p>Consulta realizada: <span th:text="${reporte.fecha}"></span> · <span th:text="${reporte.usuario}"></span></p>
+<p><strong th:text="${reporte.resumen}"></strong></p>
+<div class="wrap" th:unless="${#lists.isEmpty(reporte.filas)}"><table><thead><tr><th scope="col">Insumo</th><th scope="col">Lote</th><th scope="col">Vencimiento</th><th scope="col">Stock</th><th scope="col">Unidad</th><th scope="col">Ubicación</th><th scope="col">Proveedor</th></tr></thead><tbody><tr th:each="f : ${reporte.filas}"><td th:text="${f.insumo}"></td><td th:text="${f.lote}"></td><td th:text="${f.vence}"></td><td th:text="${f.stock}"></td><td th:text="${f.unidad}"></td><td th:text="${f.ubicacion}"></td><td th:text="${f.proveedor}"></td></tr></tbody></table></div>
+<p class="vacio" th:if="${#lists.isEmpty(reporte.filas)}">No se encontraron lotes con estos criterios. Puede realizar otra consulta con un intervalo diferente.</p>
+<p>Las cantidades se expresan en la unidad de cada insumo y corresponden al momento de la consulta.</p>
+<div class="actions"><a class="btn" th:href="@{/consultas/pdf(id=${reporte.id})}">Descargar PDF</a><a class="btn s" th:href="@{/consultas}">Nueva consulta</a></div>
+</section></main></div></body></html>

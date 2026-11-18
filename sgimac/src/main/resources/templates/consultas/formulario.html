@@ -1,0 +1,15 @@
+<!DOCTYPE html><html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Consulta 01 · Lotes por vencimiento')}"></head>
+<body><div class="app"><nav th:replace="~{fragments/layout :: sidebar('consultas')}"></nav>
+<main class="main"><div th:replace="~{fragments/layout :: topbar('Consultas a la base de datos')}"></div>
+<section class="card"><h2>Consulta 01 · Lotes por insumo y vencimiento</h2>
+<p>Seleccione un insumo y el intervalo de fechas de vencimiento. Los resultados se mostrarán en la siguiente pantalla.</p>
+<p class="msg err" role="alert" th:if="${error}" th:text="${error}"></p>
+<form method="post" th:action="@{/consultas/resultado}"><div class="grid">
+<label>Insumo<select name="insumo" required><option value="0" th:selected="${insumo == '0'}">Todos los insumos</option>
+<option th:each="i : ${insumos}" th:value="${i.idInsumo}" th:text="${i.nombre}" th:selected="${insumo == #strings.toString(i.idInsumo)}"></option></select></label>
+<label>Vencimiento desde<input type="date" name="desde" min="1000-01-01" max="9999-12-31" required th:value="${desde}"></label>
+<label>Vencimiento hasta<input type="date" name="hasta" min="1000-01-01" max="9999-12-31" required th:value="${hasta}"></label>
+</div><p>Se incluyen las dos fechas indicadas y los lotes sin existencias.</p>
+<div class="actions"><button class="btn" type="submit">Consultar lotes</button><a class="btn s" th:href="@{/consultas}">Restablecer</a></div>
+</form></section></main></div></body></html>
