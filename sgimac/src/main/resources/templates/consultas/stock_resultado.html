@@ -1,0 +1,12 @@
+<!DOCTYPE html><html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Consulta 03 · Insumos con stock bajo por categoría')}"></head>
+<body><div class="app"><nav th:replace="~{fragments/layout :: sidebar('consultas')}"></nav>
+<main class="main"><div th:replace="~{fragments/layout :: topbar('Consultas a la base de datos')}"></div>
+<div class="actions" aria-label="Consultas disponibles" style="margin-bottom:18px"><a class="btn s" th:href="@{/consultas}">01 · Vencimientos</a><a class="btn s" th:href="@{/consultas/movimientos}">02 · Movimientos</a><a class="btn s" th:href="@{/consultas/stock}">03 · Stock bajo</a></div><section class="card"><h2>Resultado de Consulta 03</h2><p>Insumos con stock bajo por categoría</p>
+<p th:text="${reporte.filtros}"></p><p>Consulta realizada: <span th:text="${reporte.fecha}"></span> · <span th:text="${reporte.usuario}"></span></p>
+<p><strong th:text="${reporte.resumen}"></strong></p>
+<div class="wrap" th:unless="${#lists.isEmpty(reporte.filas)}"><table><thead><tr><th scope="col">Insumo</th><th scope="col">Categoría</th><th scope="col">Stock total</th><th scope="col">Mínimo</th><th scope="col">Faltante</th><th scope="col">Unidad</th></tr></thead><tbody><tr th:each="f : ${reporte.filas}"><td th:text="${f.insumo}"></td><td th:text="${f.categoria}"></td><td th:text="${f.stock}"></td><td th:text="${f.minimo}"></td><td th:text="${f.faltante}"></td><td th:text="${f.unidad}"></td></tr></tbody></table></div>
+<p class="vacio" th:if="${#lists.isEmpty(reporte.filas)}">No se encontraron insumos por debajo de su stock mínimo en la categoría consultada.</p>
+<p>Stock total registrado de todos los lotes, incluidos los vencidos; no equivale a stock apto para uso. Faltante = mínimo − stock total. Los datos corresponden al momento de la consulta.</p>
+<div class="actions"><a class="btn" th:href="@{/consultas/stock/pdf(id=${reporte.id})}">Descargar PDF</a><a class="btn s" th:href="@{/consultas/stock}">Nueva consulta</a></div>
+</section></main></div></body></html>

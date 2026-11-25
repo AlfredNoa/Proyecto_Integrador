@@ -1,0 +1,12 @@
+<!DOCTYPE html><html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Consulta 02 · Movimientos por insumo y periodo')}"></head>
+<body><div class="app"><nav th:replace="~{fragments/layout :: sidebar('consultas')}"></nav>
+<main class="main"><div th:replace="~{fragments/layout :: topbar('Consultas a la base de datos')}"></div>
+<div class="actions" aria-label="Consultas disponibles" style="margin-bottom:18px"><a class="btn s" th:href="@{/consultas}">01 · Vencimientos</a><a class="btn s" th:href="@{/consultas/movimientos}">02 · Movimientos</a><a class="btn s" th:href="@{/consultas/stock}">03 · Stock bajo</a></div><section class="card"><h2>Resultado de Consulta 02</h2><p>Movimientos por insumo y periodo</p>
+<p th:text="${reporte.filtros}"></p><p>Consulta realizada: <span th:text="${reporte.fecha}"></span> · <span th:text="${reporte.usuario}"></span></p>
+<p><strong th:text="${reporte.resumen}"></strong></p>
+<div class="wrap" th:unless="${#lists.isEmpty(reporte.filas)}"><table><thead><tr><th scope="col">Fecha</th><th scope="col">Insumo</th><th scope="col">Lote</th><th scope="col">Tipo</th><th scope="col">Cantidad</th><th scope="col">Unidad</th><th scope="col">Registrado por</th></tr></thead><tbody><tr th:each="f : ${reporte.filas}"><td th:text="${f.fecha}"></td><td th:text="${f.insumo}"></td><td th:text="${f.lote}"></td><td th:text="${f.tipo}"></td><td th:text="${f.cantidad}"></td><td th:text="${f.unidad}"></td><td th:text="${f.usuario}"></td></tr></tbody></table></div>
+<p class="vacio" th:if="${#lists.isEmpty(reporte.filas)}">No se encontraron movimientos con estos criterios. Puede cambiar el insumo, las fechas o el tipo.</p>
+<p>Las cantidades corresponden a cada movimiento y se expresan en la unidad del insumo. No se suman unidades diferentes.</p>
+<div class="actions"><a class="btn" th:href="@{/consultas/movimientos/pdf(id=${reporte.id})}">Descargar PDF</a><a class="btn s" th:href="@{/consultas/movimientos}">Nueva consulta</a></div>
+</section></main></div></body></html>

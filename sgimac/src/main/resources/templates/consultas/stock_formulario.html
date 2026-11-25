@@ -1,0 +1,8 @@
+<!DOCTYPE html><html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Consulta 03 · Insumos con stock bajo por categoría')}"></head>
+<body><div class="app"><nav th:replace="~{fragments/layout :: sidebar('consultas')}"></nav>
+<main class="main"><div th:replace="~{fragments/layout :: topbar('Consultas a la base de datos')}"></div>
+<div class="actions" aria-label="Consultas disponibles" style="margin-bottom:18px"><a class="btn s" th:href="@{/consultas}">01 · Vencimientos</a><a class="btn s" th:href="@{/consultas/movimientos}">02 · Movimientos</a><a class="btn s" th:href="@{/consultas/stock}">03 · Stock bajo</a></div><section class="card"><h2>Consulta 03 · Insumos con stock bajo por categoría</h2>
+<p>Seleccione una categoría para identificar insumos por debajo de su stock mínimo. Los resultados se mostrarán en la siguiente pantalla.</p>
+<p class="msg err" role="alert" th:if="${error}" th:text="${error}"></p>
+<form method="post" th:action="@{/consultas/stock/resultado}"><div class="grid"><label>Categoría<select name="categoria" required><option value="0" th:selected="${categoria == '0'}">Todas las categorías</option><option th:each="c : ${categorias}" th:value="${c.idCategoria}" th:text="${c.nombre}" th:selected="${categoria == #strings.toString(c.idCategoria)}"></option></select></label></div><p>Se suman todos los lotes de cada insumo, incluidos los vencidos. Se incluyen insumos sin lotes con stock cero. Solo aparecen totales inferiores al mínimo.</p><div class="actions"><button class="btn" type="submit">Consultar stock bajo</button><a class="btn s" th:href="@{/consultas/stock}">Restablecer</a></div></form></section></main></div></body></html>

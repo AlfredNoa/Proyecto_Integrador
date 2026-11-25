@@ -7,12 +7,12 @@ import net.sf.jasperreports.engine.data.JRMapCollectionDataSource;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 
-/** Genera los informes 02 y 03 y la Consulta 01 con el escudo incluido en los recursos del proyecto. */
+/** Genera los informes 02 y 03 y las Consultas 01, 02 y 03 con el escudo incluido en los recursos del proyecto. */
 @Service
 public class OperativoPdfService {
     private final Map<String,JasperReport> plantillas=new HashMap<>();
     private synchronized JasperReport plantilla(String tipo) throws JRException,IOException {
-        if(!Set.of("movimientos","alertas","consulta_lotes").contains(tipo))throw new IllegalArgumentException("Informe desconocido");
+        if(!Set.of("movimientos","alertas","consulta_lotes","consulta_movimientos","consulta_stock").contains(tipo))throw new IllegalArgumentException("Informe desconocido");
         if(!plantillas.containsKey(tipo)){
             try(var xml=new ClassPathResource("reports/"+tipo+".jrxml").getInputStream()){
                 plantillas.put(tipo,JasperCompileManager.compileReport(xml));

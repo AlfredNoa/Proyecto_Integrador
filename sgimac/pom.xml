@@ -60,6 +60,8 @@
         <dependency><groupId>net.sf.jasperreports</groupId><artifactId>jasperreports</artifactId><version>6.21.5</version></dependency>
         <dependency><groupId>net.sf.jasperreports</groupId><artifactId>jasperreports-fonts</artifactId><version>6.21.5</version></dependency>
         <dependency><groupId>org.springframework.boot</groupId><artifactId>spring-boot-starter-test</artifactId><scope>test</scope></dependency>
+        <!-- Base aislada para probar las consultas sin tocar MySQL del proyecto. -->
+        <dependency><groupId>com.h2database</groupId><artifactId>h2</artifactId><scope>test</scope></dependency>
     </dependencies>
 
     <build>

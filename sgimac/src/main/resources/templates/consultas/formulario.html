@@ -2,7 +2,7 @@
 <head th:replace="~{fragments/layout :: head('Consulta 01 · Lotes por vencimiento')}"></head>
 <body><div class="app"><nav th:replace="~{fragments/layout :: sidebar('consultas')}"></nav>
 <main class="main"><div th:replace="~{fragments/layout :: topbar('Consultas a la base de datos')}"></div>
-<section class="card"><h2>Consulta 01 · Lotes por insumo y vencimiento</h2>
+<div class="actions" aria-label="Consultas disponibles" style="margin-bottom:18px"><a class="btn s" th:href="@{/consultas}">01 · Vencimientos</a><a class="btn s" th:href="@{/consultas/movimientos}">02 · Movimientos</a><a class="btn s" th:href="@{/consultas/stock}">03 · Stock bajo</a></div><section class="card"><h2>Consulta 01 · Lotes por insumo y vencimiento</h2>
 <p>Seleccione un insumo y el intervalo de fechas de vencimiento. Los resultados se mostrarán en la siguiente pantalla.</p>
 <p class="msg err" role="alert" th:if="${error}" th:text="${error}"></p>
 <form method="post" th:action="@{/consultas/resultado}"><div class="grid">

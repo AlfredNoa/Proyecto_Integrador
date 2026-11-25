@@ -2,7 +2,7 @@
 <head th:replace="~{fragments/layout :: head('Consulta 01 · Lotes por vencimiento')}"></head>
 <body><div class="app"><nav th:replace="~{fragments/layout :: sidebar('consultas')}"></nav>
 <main class="main"><div th:replace="~{fragments/layout :: topbar('Consultas a la base de datos')}"></div>
-<section class="card"><h2>Resultado de Consulta 01</h2><p>Lotes por insumo y fecha de vencimiento</p>
+<div class="actions" aria-label="Consultas disponibles" style="margin-bottom:18px"><a class="btn s" th:href="@{/consultas}">01 · Vencimientos</a><a class="btn s" th:href="@{/consultas/movimientos}">02 · Movimientos</a><a class="btn s" th:href="@{/consultas/stock}">03 · Stock bajo</a></div><section class="card"><h2>Resultado de Consulta 01</h2><p>Lotes por insumo y fecha de vencimiento</p>
 <p th:text="${reporte.filtros}"></p><p>Consulta realizada: <span th:text="${reporte.fecha}"></span> · <span th:text="${reporte.usuario}"></span></p>
 <p><strong th:text="${reporte.resumen}"></strong></p>
 <div class="wrap" th:unless="${#lists.isEmpty(reporte.filas)}"><table><thead><tr><th scope="col">Insumo</th><th scope="col">Lote</th><th scope="col">Vencimiento</th><th scope="col">Stock</th><th scope="col">Unidad</th><th scope="col">Ubicación</th><th scope="col">Proveedor</th></tr></thead><tbody><tr th:each="f : ${reporte.filas}"><td th:text="${f.insumo}"></td><td th:text="${f.lote}"></td><td th:text="${f.vence}"></td><td th:text="${f.stock}"></td><td th:text="${f.unidad}"></td><td th:text="${f.ubicacion}"></td><td th:text="${f.proveedor}"></td></tr></tbody></table></div>

@@ -1,0 +1,15 @@
+<!DOCTYPE html><html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Consulta 02 · Movimientos por insumo y periodo')}"></head>
+<body><div class="app"><nav th:replace="~{fragments/layout :: sidebar('consultas')}"></nav>
+<main class="main"><div th:replace="~{fragments/layout :: topbar('Consultas a la base de datos')}"></div>
+<div class="actions" aria-label="Consultas disponibles" style="margin-bottom:18px"><a class="btn s" th:href="@{/consultas}">01 · Vencimientos</a><a class="btn s" th:href="@{/consultas/movimientos}">02 · Movimientos</a><a class="btn s" th:href="@{/consultas/stock}">03 · Stock bajo</a></div><section class="card"><h2>Consulta 02 · Movimientos por insumo y periodo</h2>
+<p>Seleccione un insumo y el intervalo de fechas del movimiento. Los resultados se mostrarán en la siguiente pantalla.</p>
+<p class="msg err" role="alert" th:if="${error}" th:text="${error}"></p>
+<form method="post" th:action="@{/consultas/movimientos/resultado}"><div class="grid">
+<label>Insumo<select name="insumo" required><option value="0" th:selected="${insumo == '0'}">Todos los insumos</option>
+<option th:each="i : ${insumos}" th:value="${i.idInsumo}" th:text="${i.nombre}" th:selected="${insumo == #strings.toString(i.idInsumo)}"></option></select></label>
+<label>Movimiento desde<input type="date" name="desde" min="1000-01-01" max="9999-12-31" required th:value="${desde}"></label>
+<label>Movimiento hasta<input type="date" name="hasta" min="1000-01-01" max="9999-12-31" required th:value="${hasta}"></label>
+<label>Tipo de movimiento<select name="tipo" required><option value="TODOS" th:selected="${tipo == 'TODOS'}">Entradas y salidas</option><option value="ENTRADA" th:selected="${tipo == 'ENTRADA'}">Entrada</option><option value="SALIDA" th:selected="${tipo == 'SALIDA'}">Salida</option></select></label></div><p>Se incluyen ambos días completos. Las fechas corresponden al registro del movimiento.</p>
+<div class="actions"><button class="btn" type="submit">Consultar movimientos</button><a class="btn s" th:href="@{/consultas/movimientos}">Restablecer</a></div>
+</form></section></main></div></body></html>

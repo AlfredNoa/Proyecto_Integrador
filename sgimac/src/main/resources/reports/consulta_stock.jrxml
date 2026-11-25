@@ -1,0 +1,96 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="consulta_stock" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="790" leftMargin="26" rightMargin="26" topMargin="24" bottomMargin="24" whenNoDataType="AllSectionsNoDetail">
+  <style name="Base" isDefault="true" fontName="DejaVu Sans" fontSize="9" pdfEncoding="Identity-H" isPdfEmbedded="true" />
+  <parameter name="FECHA" class="java.lang.String" />
+  <parameter name="USUARIO" class="java.lang.String" />
+  <parameter name="FILTROS" class="java.lang.String" />
+  <parameter name="RESUMEN" class="java.lang.String" />
+  <parameter name="LOGO" class="java.io.InputStream" />
+  <field name="insumo" class="java.lang.String" /><field name="categoria" class="java.lang.String" /><field name="stock" class="java.lang.String" /><field name="minimo" class="java.lang.String" /><field name="faltante" class="java.lang.String" /><field name="unidad" class="java.lang.String" /><title>
+    <band height="105">
+      <staticText>
+        <reportElement x="75" y="0" width="715" height="26" />
+        <textElement verticalAlignment="Middle">
+          <font size="17" isBold="true" />
+        </textElement>
+        <text>Hospital José Agurto Tello</text>
+      </staticText>
+      <staticText>
+        <reportElement x="75" y="29" width="715" height="23" />
+        <textElement verticalAlignment="Middle">
+          <font size="13" isBold="true" />
+        </textElement>
+        <text>Consulta 03 · Insumos con stock bajo por categoría</text>
+      </staticText>
+      <textField>
+        <reportElement x="0" y="55" width="790" height="20" />
+        <textElement verticalAlignment="Middle">
+          <font size="9" />
+        </textElement>
+        <textFieldExpression>"Fecha de consulta: " + $P{FECHA} + "   |   Generado por: " + $P{USUARIO}</textFieldExpression>
+      </textField>
+      <textField textAdjust="StretchHeight">
+        <reportElement x="0" y="77" width="790" height="26" />
+        <textElement verticalAlignment="Middle">
+          <font size="9" />
+        </textElement>
+        <textFieldExpression>$P{FILTROS}</textFieldExpression>
+      </textField>
+      <image scaleImage="RetainShape" hAlign="Center" vAlign="Middle">
+        <reportElement x="0" y="0" width="65" height="51" />
+        <imageExpression>$P{LOGO}</imageExpression>
+      </image>
+    </band>
+  </title>
+  <pageHeader>
+    <band height="22">
+      <staticText>
+        <reportElement x="0" y="0" width="790" height="20" />
+        <textElement verticalAlignment="Middle">
+          <font size="10" isBold="true" />
+        </textElement>
+        <text>Resultado de la consulta</text>
+      </staticText>
+    </band>
+  </pageHeader>
+  <columnHeader>
+    <band height="32"><staticText><reportElement x="0" y="0" width="240" height="30" mode="Opaque" backcolor="#35216B" forecolor="#FFFFFF" /><textElement verticalAlignment="Middle"><font size="8" isBold="true" /></textElement><text>Insumo</text></staticText><staticText><reportElement x="240" y="0" width="180" height="30" mode="Opaque" backcolor="#35216B" forecolor="#FFFFFF" /><textElement verticalAlignment="Middle"><font size="8" isBold="true" /></textElement><text>Categoría</text></staticText><staticText><reportElement x="420" y="0" width="90" height="30" mode="Opaque" backcolor="#35216B" forecolor="#FFFFFF" /><textElement verticalAlignment="Middle"><font size="8" isBold="true" /></textElement><text>Stock total</text></staticText><staticText><reportElement x="510" y="0" width="80" height="30" mode="Opaque" backcolor="#35216B" forecolor="#FFFFFF" /><textElement verticalAlignment="Middle"><font size="8" isBold="true" /></textElement><text>Mínimo</text></staticText><staticText><reportElement x="590" y="0" width="80" height="30" mode="Opaque" backcolor="#35216B" forecolor="#FFFFFF" /><textElement verticalAlignment="Middle"><font size="8" isBold="true" /></textElement><text>Faltante</text></staticText><staticText><reportElement x="670" y="0" width="120" height="30" mode="Opaque" backcolor="#35216B" forecolor="#FFFFFF" /><textElement verticalAlignment="Middle"><font size="8" isBold="true" /></textElement><text>Unidad</text></staticText></band></columnHeader>
+  <detail>
+    <band height="42" splitType="Stretch"><textField textAdjust="StretchHeight"><reportElement x="0" y="0" width="240" height="40" /><textElement verticalAlignment="Middle"><font size="8" isBold="false" /></textElement><textFieldExpression>$F{insumo}</textFieldExpression></textField><textField textAdjust="StretchHeight"><reportElement x="240" y="0" width="180" height="40" /><textElement verticalAlignment="Middle"><font size="8" isBold="false" /></textElement><textFieldExpression>$F{categoria}</textFieldExpression></textField><textField textAdjust="StretchHeight"><reportElement x="420" y="0" width="90" height="40" /><textElement verticalAlignment="Middle"><font size="8" isBold="false" /></textElement><textFieldExpression>$F{stock}</textFieldExpression></textField><textField textAdjust="StretchHeight"><reportElement x="510" y="0" width="80" height="40" /><textElement verticalAlignment="Middle"><font size="8" isBold="false" /></textElement><textFieldExpression>$F{minimo}</textFieldExpression></textField><textField textAdjust="StretchHeight"><reportElement x="590" y="0" width="80" height="40" /><textElement verticalAlignment="Middle"><font size="8" isBold="false" /></textElement><textFieldExpression>$F{faltante}</textFieldExpression></textField><textField textAdjust="StretchHeight"><reportElement x="670" y="0" width="120" height="40" /><textElement verticalAlignment="Middle"><font size="8" isBold="false" /></textElement><textFieldExpression>$F{unidad}</textFieldExpression></textField></band></detail>
+  <pageFooter>
+    <band height="23">
+      <textField>
+        <reportElement x="0" y="0" width="130" height="20" />
+        <textElement verticalAlignment="Middle">
+          <font size="9" />
+        </textElement>
+        <textFieldExpression>"Página " + $V{PAGE_NUMBER}</textFieldExpression>
+      </textField>
+      <staticText>
+        <reportElement x="140" y="0" width="650" height="20" />
+        <textElement verticalAlignment="Middle">
+          <font size="8" isBold="false" />
+        </textElement>
+        <text>Stock registrado: incluye lotes vencidos. Faltante = mínimo − stock total.</text>
+      </staticText>
+    </band>
+  </pageFooter>
+  <summary>
+    <band height="65">
+      <textField>
+        <reportElement x="0" y="0" width="790" height="25" />
+        <textElement verticalAlignment="Middle">
+          <font size="10" />
+        </textElement>
+        <textFieldExpression>$P{RESUMEN}</textFieldExpression>
+      </textField>
+      <textField>
+        <reportElement x="0" y="31" width="790" height="25" />
+        <textElement verticalAlignment="Middle">
+          <font size="10" />
+        </textElement>
+        <textFieldExpression>$V{REPORT_COUNT} == 0 ? "No se encontraron registros con estos filtros." : "Fin del informe."</textFieldExpression>
+      </textField>
+    </band>
+  </summary>
+</jasperReport>
