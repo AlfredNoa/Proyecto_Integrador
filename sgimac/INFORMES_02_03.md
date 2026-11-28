@@ -1,3 +1,5 @@
+> Actualización: lea primero **LEEME_MEJORAS_INVENTARIO.md**. Sobre una base existente se aplica la migración 05, sin reiniciar datos. La Consulta 03 ahora calcula déficit con stock no vencido y las alertas admiten RESUELTA. Las instrucciones de carga que siguen son para instalaciones nuevas o reinicios deliberados.
+
 # Movimientos y seguimiento de alertas
 Con el proyecto en ejecución, inicie sesión y abra **Reportes**. El selector permite alternar entre inventario (01), movimientos (02) y alertas (03). No es necesario modificar ni recargar MySQL.
 

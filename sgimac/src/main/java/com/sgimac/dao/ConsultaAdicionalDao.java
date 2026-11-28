@@ -52,38 +52,8 @@ public class ConsultaAdicionalDao {
         }, params.toArray());
     }
 
-    /**
-     * Suma todos los lotes, incluidos los vencidos; no representa stock apto para uso.
-     * LEFT JOIN incluye insumos sin lotes con stock cero. HAVING selecciona totales
-     * estrictamente menores que el mínimo del insumo. No suma distintas unidades.
-     * @param categoria identificador o cero para todas
-     * @return una fila por insumo con déficit, ordenada por categoría y nombre
-     * @throws IllegalArgumentException si el identificador es negativo
-     */
-    public List<Map<String, ?>> stockBajo(int categoria) {
-        if (categoria < 0) throw new IllegalArgumentException("Categoría inválida.");
-        String sql = """
-            SELECT i.nombre AS insumo, c.nombre AS categoria, i.unidad_medida AS unidad,
-                   COALESCE(SUM(l.cantidad_actual), 0) AS stock,
-                   i.stock_minimo AS minimo,
-                   i.stock_minimo - COALESCE(SUM(l.cantidad_actual), 0) AS faltante
-            FROM insumo i
-            JOIN categoria c ON c.id_categoria = i.id_categoria
-            LEFT JOIN lote l ON l.id_insumo = i.id_insumo
-            """;
-        List<Object> params = new ArrayList<>();
-        if (categoria > 0) { sql += " WHERE i.id_categoria = ?"; params.add(categoria); }
-        sql += """
-             GROUP BY i.id_insumo, i.nombre, c.id_categoria, c.nombre,
-                      i.unidad_medida, i.stock_minimo
-             HAVING COALESCE(SUM(l.cantidad_actual), 0) < i.stock_minimo
-             ORDER BY c.nombre, i.nombre, i.id_insumo
-            """;
-        return jdbc.query(sql, (rs, n) -> {
-            Map<String, String> fila = new LinkedHashMap<>();
-            for (String campo : List.of("insumo", "categoria", "unidad", "stock", "minimo", "faltante"))
-                fila.put(campo, rs.getString(campo));
-            return fila;
-        }, params.toArray());
-    }
+    /** Consulta el déficit respecto al stock utilizable por fecha, incluidos insumos sin lotes.
+     * @param categoria cero para todas las categorías
+     * @return total registrado, vencido, utilizable, mínimo y faltante por insumo */
+    public List<Map<String, ?>> stockBajo(int categoria) { return new StockDao(jdbc).bajos(categoria); }
 }

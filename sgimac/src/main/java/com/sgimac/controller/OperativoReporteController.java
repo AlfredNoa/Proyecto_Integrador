@@ -19,6 +19,8 @@ import org.springframework.web.server.ResponseStatusException;
 @Controller
 @RequestMapping("/reportes/{informe:movimientos|alertas}")
 public class OperativoReporteController {
+    @org.springframework.beans.factory.annotation.Autowired private com.sgimac.service.AlertasService revision;
+
     private static final Logger LOG=LoggerFactory.getLogger(OperativoReporteController.class);
     private final ConsultaOperativaDao dao;
     private final OperativoPdfService pdf;
@@ -42,7 +44,7 @@ public class OperativoReporteController {
     @GetMapping
     public String formulario(@PathVariable String informe,@RequestParam Map<String,String> filtros,HttpSession sesion,Model model){
         if(sesion.getAttribute("usuarioId")==null)return "redirect:/login";
-        boolean mov=informe.equals("movimientos");
+        boolean mov=informe.equals("movimientos");if(!mov)revision.actualizar();
         String tipo=filtros.getOrDefault("tipo","TODOS"),nivel=filtros.getOrDefault("nivel","TODOS"),
             estado=filtros.getOrDefault("estado","TODOS"),desde=filtros.getOrDefault("desde",""),hasta=filtros.getOrDefault("hasta","");
         model.addAttribute("informe",informe);model.addAttribute("tipo",tipo);model.addAttribute("nivel",nivel);model.addAttribute("estado",estado);
@@ -55,7 +57,7 @@ public class OperativoReporteController {
                 filas=dao.movimientos(d,h,tipo);
                 criterios="Desde: "+(d==null?"Sin límite":d)+" | Hasta: "+(h==null?"Sin límite":h)+" | Tipo: "+tipo;
             }else{
-                opcion(tipo,"TODOS","CADUCIDAD","STOCK_BAJO");opcion(nivel,"TODOS","BAJO","MEDIO","ALTO");opcion(estado,"TODOS","PENDIENTE","ATENDIDA");
+                opcion(tipo,"TODOS","CADUCIDAD","STOCK_BAJO");opcion(nivel,"TODOS","BAJO","MEDIO","ALTO");opcion(estado,"TODOS","PENDIENTE","ATENDIDA","RESUELTA");
                 filas=dao.alertas(tipo,nivel,estado);criterios="Tipo: "+tipo.replace('_',' ')+" | Nivel: "+nivel+" | Estado: "+estado;
             }
             var r=new ConsultaOperativa((String)sesion.getAttribute("usuarioNombre"),criterios,filas,mov);

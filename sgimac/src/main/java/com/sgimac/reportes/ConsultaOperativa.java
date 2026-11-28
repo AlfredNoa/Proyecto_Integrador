@@ -22,7 +22,7 @@ public final class ConsultaOperativa implements Serializable {
         filas = List.copyOf(copia);
         long n = filas.stream().filter(f -> movimientos ? "ENTRADA".equals(f.get("tipo")) : "PENDIENTE".equals(f.get("estado"))).count();
         resumen = movimientos ? "Movimientos: " + filas.size() + " | Entradas: " + n + " | Salidas: " + (filas.size()-n)
-                              : "Alertas: " + filas.size() + " | Pendientes: " + n + " | Atendidas: " + (filas.size()-n);
+                              : "Alertas: " + filas.size() + " | Pendientes: " + n + " | Atendidas: " + filas.stream().filter(f -> "ATENDIDA".equals(f.get("estado"))).count() + " | Resueltas: " + filas.stream().filter(f -> "RESUELTA".equals(f.get("estado"))).count();
     }
     /**
      * Conserva un resultado de consulta con un resumen específico.

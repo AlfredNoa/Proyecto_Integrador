@@ -15,6 +15,9 @@ import org.springframework.web.bind.annotation.*;
 @Controller
 @RequestMapping("/alertas")
 public class AlertaController {
+    @org.springframework.beans.factory.annotation.Autowired private com.sgimac.service.ListadosService listados;
+    @org.springframework.beans.factory.annotation.Autowired private com.sgimac.service.AlertasService revision;
+
 
     /** DAO de alerta (inyectado por el constructor). */
     private final AlertaDao alertaDao;
@@ -33,11 +36,16 @@ public class AlertaController {
      *
      * @param model modelo de Spring donde se cargan los datos que usa la vista
      * @return nombre de la vista Thymeleaf ({@code alertas/lista})
+     
+     * @param q búsqueda por nombre o código
+     * @param estado filtro del listado
+     * @param pagina página solicitada
+     * @param tam cantidad de filas por página
      */
     @GetMapping
-    public String listar(Model model) {
-        model.addAttribute("alertas", alertaDao.listarPendientes());
-        return "alertas/lista";
+    public String listar(@RequestParam(defaultValue="") String q,@RequestParam(defaultValue="PENDIENTE") String estado,
+       @RequestParam(defaultValue="1") int pagina,@RequestParam(defaultValue="20") int tam,Model model) {
+        revision.actualizar();listados.cargar(model,"alertas",q,estado,pagina,tam);return "alertas/lista";
     }
 
     /**
@@ -54,7 +62,7 @@ public class AlertaController {
         if (idUsuarioSesion == null) {
             return "redirect:/login";
         }
-        alertaDao.marcarAtendida(idAlerta, (int) idUsuarioSesion);
+        revision.atender(idAlerta, (int) idUsuarioSesion);
         return "redirect:/alertas";
     }
 }

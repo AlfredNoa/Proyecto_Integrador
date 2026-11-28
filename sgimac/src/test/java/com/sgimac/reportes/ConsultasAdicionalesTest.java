@@ -28,6 +28,8 @@ class ConsultasAdicionalesTest {
         jdbc.update("INSERT INTO categoria VALUES(1,'Material médico'),(2,'Medicamentos')");
         jdbc.update("INSERT INTO insumo VALUES(1,1,'Guantes','Cajas',10),(2,1,'Gasas','Paquetes',10),(3,2,'Alcohol','Frascos',5),(4,2,'Suero','Frascos',0),(5,2,'Tabletas','Tabletas',10)");
         jdbc.update("INSERT INTO lote VALUES(1,1,'LOT-001',6),(2,1,'LOT-002',5),(3,2,'LOT-003',2),(4,2,'LOT-004',3),(5,5,'LOT-005',10)");
+        jdbc.execute("ALTER TABLE insumo ADD codigo VARCHAR(30) DEFAULT 'INS'");
+        jdbc.execute("ALTER TABLE lote ADD fecha_vencimiento DATE DEFAULT CURRENT_DATE");
         jdbc.update("INSERT INTO usuario VALUES(1,'Ana Pérez')");
         jdbc.update("INSERT INTO movimiento VALUES(1,1,1,'2026-11-01 00:00:00','ENTRADA',6),(2,1,1,'2026-11-15 23:59:59.999999','SALIDA',2),(3,3,1,'2026-11-16 00:00:00','ENTRADA',2),(4,3,1,'2026-11-10 12:00:00','ENTRADA',3)");
     }
@@ -84,7 +86,7 @@ class ConsultasAdicionalesTest {
         var pdf=new OperativoPdfService();
         for(String tipo:List.of("consulta_movimientos","consulta_stock")) for(int n:List.of(0,50)) {
             List<Map<String,?>> filas=new ArrayList<>();
-            for(int i=0;i<n;i++)filas.add(tipo.endsWith("stock")?Map.of("insumo","Gasa estéril 10 x 10 cm","categoria","Material médico","stock","5","minimo","10","faltante","5","unidad","Paquetes"):
+            for(int i=0;i<n;i++)filas.add(tipo.endsWith("stock")?Map.of("insumo","Gasa estéril 10 x 10 cm","categoria","Material médico","stock","5","vencido","0","utilizable","5","minimo","10","faltante","5","unidad","Paquetes"):
                 Map.of("fecha","15/11/2026 23:59","insumo","Gasa estéril 10 x 10 cm","lote","LOT-001","tipo","SALIDA","cantidad","5","unidad","Paquetes","usuario","Ana Pérez"));
             byte[] bytes=pdf.generar(tipo,new ConsultaOperativa("Ana Pérez","Prueba de filtros",filas,"Resultados: "+n));
             var reader=new com.lowagie.text.pdf.PdfReader(bytes);

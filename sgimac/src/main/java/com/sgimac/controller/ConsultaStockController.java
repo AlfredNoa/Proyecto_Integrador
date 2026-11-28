@@ -71,7 +71,7 @@ public class ConsultaStockController {
             String nombre=seleccionado==0?"Todas las categorías":categorias.buscarPorId(seleccionado)
                 .orElseThrow(IllegalArgumentException::new).getNombre();
             var filas=dao.stockBajo(seleccionado);
-            String filtros="Categoría: "+nombre+" | Stock registrado de todos los lotes, incluidos vencidos.";
+            String filtros="Categoría: "+nombre+" | Déficit según stock utilizable por fecha (incluye hoy).";
             var resultado=new ConsultaOperativa((String)s.getAttribute("usuarioNombre"),filtros,filas,
                 "Insumos con stock bajo: "+filas.size());
             s.setAttribute(CLAVE,resultado);

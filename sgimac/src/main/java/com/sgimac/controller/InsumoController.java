@@ -16,6 +16,9 @@ import org.springframework.web.bind.annotation.*;
 @Controller
 @RequestMapping("/insumos")
 public class InsumoController {
+    @org.springframework.beans.factory.annotation.Autowired private com.sgimac.service.ListadosService listados;
+    @org.springframework.beans.factory.annotation.Autowired private com.sgimac.service.AlertasService revision;
+
 
     /** DAO de insumo (inyectado por el constructor). */
     private final InsumoDao insumoDao;
@@ -37,16 +40,18 @@ public class InsumoController {
      * Atiende {@code GET /insumos}: lista los insumos; si se envía un texto de búsqueda, filtra por
      * nombre o código.
      *
-     * @param q texto a buscar (opcional)
      * @param model modelo de Spring donde se cargan los datos que usa la vista
      * @return nombre de la vista Thymeleaf ({@code insumos/lista})
+     
+     * @param q búsqueda por nombre o código
+     * @param estado filtro del listado
+     * @param pagina página solicitada
+     * @param tam cantidad de filas por página
      */
     @GetMapping
-    public String listar(@RequestParam(required = false) String q, Model model) {
-        boolean hayBusqueda = q != null && !q.isBlank();
-        model.addAttribute("insumos", hayBusqueda ? insumoDao.buscar(q) : insumoDao.listar());
-        model.addAttribute("q", q == null ? "" : q);
-        return "insumos/lista";
+    public String listar(@RequestParam(defaultValue="") String q,@RequestParam(defaultValue="TODOS") String estado,
+       @RequestParam(defaultValue="1") int pagina,@RequestParam(defaultValue="20") int tam,Model model) {
+        revision.actualizar();listados.cargar(model,"insumos",q,estado,pagina,tam);return "insumos/lista";
     }
 
     /**
@@ -85,6 +90,7 @@ public class InsumoController {
         insumo.setStockMinimo(stockMinimo);
         insumo.setIdCategoria(idCategoria);
         insumoDao.insertar(insumo);
+        revision.actualizar();
         return "redirect:/insumos";
     }
 }

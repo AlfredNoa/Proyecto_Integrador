@@ -139,12 +139,14 @@ CREATE INDEX idx_movimiento_fecha ON movimiento (fecha);
 -- ---------------------------------------------------------------------
 CREATE TABLE alerta (
     id_alerta          INT AUTO_INCREMENT PRIMARY KEY,
-    id_lote            INT NOT NULL,
+    id_lote            INT NULL,
+    id_insumo          INT NULL,
     id_usuario_atiende INT NULL,
     tipo               ENUM('CADUCIDAD','STOCK_BAJO') NOT NULL,
     nivel              ENUM('BAJO','MEDIO','ALTO') NOT NULL,
-    estado             ENUM('PENDIENTE','ATENDIDA') NOT NULL DEFAULT 'PENDIENTE',
+    estado             ENUM('PENDIENTE','ATENDIDA','RESUELTA') NOT NULL DEFAULT 'PENDIENTE',
     fecha_generacion   DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_alerta_insumo FOREIGN KEY (id_insumo) REFERENCES insumo(id_insumo) ON UPDATE CASCADE ON DELETE RESTRICT,
     CONSTRAINT fk_alerta_lote FOREIGN KEY (id_lote)
         REFERENCES lote (id_lote)
         ON UPDATE CASCADE ON DELETE RESTRICT,

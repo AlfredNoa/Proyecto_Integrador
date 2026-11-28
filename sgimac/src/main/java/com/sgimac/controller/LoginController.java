@@ -32,6 +32,8 @@ import java.util.Optional;
  */
 @Controller
 public class LoginController {
+    @org.springframework.beans.factory.annotation.Autowired private com.sgimac.service.PanelService panelService;
+
 
     /** DAO de usuario (inyectado por el constructor). */
     private final UsuarioDao usuarioDao;
@@ -126,20 +128,7 @@ public class LoginController {
         model.addAttribute("nombre", sesion.getAttribute("usuarioNombre"));
         model.addAttribute("rol", sesion.getAttribute("usuarioRol"));
 
-        // Indicadores del panel principal
-        List<Lote> lotes = loteDao.listar();
-        long vigentes = lotes.stream().filter(l -> !l.estaVencido() && l.diasParaVencer() > 90).count();
-        long criticos = lotes.stream().filter(l -> !l.estaVencido() && l.diasParaVencer() <= 30).count();
-        long vencidos = lotes.stream().filter(Lote::estaVencido).count();
-        List<Alerta> pendientes = alertaDao.listarPendientes();
-
-        model.addAttribute("totalInsumos", insumoDao.listar().size());
-        model.addAttribute("lotesVigentes", vigentes);
-        model.addAttribute("lotesCriticos", criticos);
-        model.addAttribute("lotesVencidos", vencidos);
-        model.addAttribute("totalAlertas", pendientes.size());
-        model.addAttribute("alertasRecientes", pendientes.stream().limit(5).toList());
-        model.addAttribute("proximos", loteDao.listarProximosAVencer(90).stream().limit(5).toList());
+        panelService.cargar(model);
         return "panel";
     }
 

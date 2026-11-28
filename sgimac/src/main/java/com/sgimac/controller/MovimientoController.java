@@ -28,6 +28,10 @@ import java.util.Optional;
 @Controller
 @RequestMapping("/movimientos")
 public class MovimientoController {
+    @org.springframework.beans.factory.annotation.Autowired private com.sgimac.service.ListadosService listados;
+    @org.springframework.beans.factory.annotation.Autowired private com.sgimac.service.AlertasService revision;
+    @org.springframework.beans.factory.annotation.Autowired private com.sgimac.service.FefoService fefo;
+
 
     /** Nombre del rol al que se notifica cuando se genera una alerta de nivel alto. */
     private static final String ROL_PERSONAL_MEDICO = "Personal Médico";
@@ -77,10 +81,22 @@ public class MovimientoController {
      *
      * @param model modelo de Spring donde se cargan los datos que usa la vista
      * @return nombre de la vista Thymeleaf ({@code movimientos/lista})
+     
+     * @param q búsqueda por nombre o código
+     * @param estado filtro del listado
+     * @param pagina página solicitada
+     * @param tam cantidad de filas por página
+     * @param insumoSugerido insumo para la propuesta FEFO
+     * @param cantidadSugerida cantidad solicitada para FEFO
      */
     @GetMapping
-    public String listar(Model model) {
-        cargarDatosComunes(model);
+    public String listar(@RequestParam(defaultValue="") String q,@RequestParam(defaultValue="TODOS") String estado,
+       @RequestParam(defaultValue="1") int pagina,@RequestParam(defaultValue="20") int tam,
+       @RequestParam(defaultValue="0") int insumoSugerido,@RequestParam(defaultValue="1") int cantidadSugerida,Model model) {
+        cargarDatosComunes(model);listados.cargar(model,"movimientos",q,estado,pagina,tam);
+        model.addAttribute("insumoSugerido",insumoSugerido);model.addAttribute("cantidadSugerida",cantidadSugerida);
+        if(insumoSugerido>0)try{model.addAttribute("fefo",fefo.sugerir(insumoSugerido,cantidadSugerida));}
+        catch(IllegalArgumentException e){model.addAttribute("error",e.getMessage());}
         return "movimientos/lista";
     }
 
@@ -97,15 +113,17 @@ public class MovimientoController {
      * @param cantidad cantidad de unidades, mayor que cero
      * @param sesion sesión HTTP del usuario
      * @param model modelo de Spring donde se cargan los mensajes y los datos de la vista
-     * @return la vista {@code movimientos/lista} con un mensaje de éxito o de error, o redirección
+     * @param flash mensaje que se conserva después del registro
+     * @return redirección al historial en caso de éxito, vista con error o redirección
      *     a {@code /login} si no hay sesión iniciada
      */
+    @org.springframework.transaction.annotation.Transactional(isolation=org.springframework.transaction.annotation.Isolation.READ_COMMITTED)
     @PostMapping("/registrar")
     public String registrar(@RequestParam int idLote,
                              @RequestParam String tipo,
                              @RequestParam int cantidad,
                              HttpSession sesion,
-                             Model model) {
+                             Model model, org.springframework.web.servlet.mvc.support.RedirectAttributes flash) {
 
         Object idUsuarioSesion = sesion.getAttribute("usuarioId");
         if (idUsuarioSesion == null) {
@@ -120,7 +138,7 @@ public class MovimientoController {
         }
         Lote lote = loteOpt.get();
 
-        if (cantidad <= 0) {
+        if (cantidad <= 0 || !java.util.Set.of("ENTRADA","SALIDA").contains(tipo)) {
             model.addAttribute("error", "Ingrese una cantidad válida.");
             cargarDatosComunes(model);
             return "movimientos/lista";
@@ -163,89 +181,10 @@ public class MovimientoController {
                 "lote:" + lote.getCodigoQr());
 
         // --- Paso 4: evaluar alertas de caducidad y de stock bajo ---
-        evaluarYGenerarAlertas(idLote);
+        revision.actualizar();
 
-        model.addAttribute("mensaje", "Movimiento registrado correctamente.");
-        cargarDatosComunes(model);
-        return "movimientos/lista";
-    }
-
-    /**
-     * Replica el bloque {@code evaluarAlertas(lote)} del diagrama secuencial 6.7: revisa si el lote
-     * está por vencer y si el insumo quedó bajo su stock mínimo; si es así, genera la alerta (sin
-     * duplicar una ya pendiente) y, cuando el nivel es alto, notifica al personal médico.
-     *
-     * <p>Niveles de caducidad: ALTO si el lote está vencido o vence en 30 días o menos; MEDIO si vence
-     * en 90 días o menos. La alerta de stock bajo se genera con nivel MEDIO.
-     *
-     * @param idLote identificador del lote recién modificado
-     */
-    private void evaluarYGenerarAlertas(int idLote) {
-        Optional<Lote> loteActualizado = loteDao.buscarPorId(idLote);
-        if (loteActualizado.isEmpty()) {
-            return;
-        }
-        Lote lote = loteActualizado.get();
-
-        // --- Alerta por caducidad ---
-        long dias = lote.diasParaVencer();
-        String nivelCaducidad = null;
-        if (lote.estaVencido() || dias <= 30) {
-            nivelCaducidad = Alerta.NIVEL_ALTO;
-        } else if (dias <= 90) {
-            nivelCaducidad = Alerta.NIVEL_MEDIO;
-        }
-        if (nivelCaducidad != null && !alertaDao.existePendiente(idLote, Alerta.CADUCIDAD)) {
-            Alerta alerta = new Alerta();
-            alerta.setIdLote(idLote);
-            alerta.setTipo(Alerta.CADUCIDAD);
-            alerta.setNivel(nivelCaducidad);
-            int idAlerta = alertaDao.insertar(alerta);
-
-            String mensaje = lote.estaVencido()
-                    ? lote.getNombreInsumo() + " — lote " + lote.getCodigoQr() + " venció hace " + (-dias) + " días."
-                    : lote.getNombreInsumo() + " — lote " + lote.getCodigoQr() + " vence en " + dias + " días.";
-
-            if (Alerta.NIVEL_ALTO.equals(nivelCaducidad)) {
-                notificarPersonalMedico(idAlerta, mensaje);
-            }
-        }
-
-        // --- Alerta por stock bajo (evaluada sobre el insumo del lote) ---
-        Optional<Insumo> insumoOpt = insumoDao.buscarPorId(lote.getIdInsumo());
-        if (insumoOpt.isPresent()) {
-            Insumo insumo = insumoOpt.get();
-            int stockVigente = loteDao.sumarStockVigente(insumo.getIdInsumo());
-            if (stockVigente < insumo.getStockMinimo()
-                    && !alertaDao.existePendiente(idLote, Alerta.STOCK_BAJO)) {
-                // La tabla "alerta" referencia un lote (no un insumo directamente),
-                // asi que la alerta de stock bajo queda asociada al lote que
-                // disparo la revision, como representante del insumo.
-                Alerta alerta = new Alerta();
-                alerta.setIdLote(idLote);
-                alerta.setTipo(Alerta.STOCK_BAJO);
-                alerta.setNivel(Alerta.NIVEL_MEDIO);
-                alertaDao.insertar(alerta);
-            }
-        }
-    }
-
-    /**
-     * Envía una notificación con el mensaje indicado a cada usuario activo con el rol «Personal
-     * Médico».
-     *
-     * @param idAlerta identificador de la alerta que originó la notificación
-     * @param mensaje texto de la notificación
-     */
-    private void notificarPersonalMedico(int idAlerta, String mensaje) {
-        List<Usuario> personalMedico = usuarioDao.listarPorRol(ROL_PERSONAL_MEDICO);
-        for (Usuario medico : personalMedico) {
-            Notificacion notificacion = new Notificacion();
-            notificacion.setIdAlerta(idAlerta);
-            notificacion.setIdUsuario(medico.getIdUsuario());
-            notificacion.setMensaje(mensaje);
-            notificacionDao.insertar(notificacion);
-        }
+        flash.addFlashAttribute("mensaje", "Movimiento registrado correctamente. Actualice la sugerencia de lotes antes de la siguiente salida.");
+        return "redirect:/movimientos";
     }
 
     /**
@@ -255,6 +194,8 @@ public class MovimientoController {
      */
     private void cargarDatosComunes(Model model) {
         model.addAttribute("lotes", loteDao.listar());
-        model.addAttribute("movimientos", movimientoDao.listar());
+        model.addAttribute("insumos",insumoDao.listar());
+        model.addAttribute("insumoSugerido",0);model.addAttribute("cantidadSugerida",1);
+        listados.cargar(model,"movimientos","","TODOS",1,20);
     }
 }

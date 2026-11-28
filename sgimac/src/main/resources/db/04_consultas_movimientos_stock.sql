@@ -19,20 +19,21 @@ WHERE m.fecha >= CAST(@desde AS DATETIME)
   AND (@tipo = 'TODOS' OR m.tipo = @tipo)
 ORDER BY m.fecha DESC, m.id_movimiento DESC;
 
--- Consulta 03: total registrado, incluidos lotes vencidos y sin distinguir ubicación.
--- No equivale a existencias aptas para uso. No combina unidades de insumos diferentes.
-SET @categoria = 0; -- 0: todas; otro valor: id_categoria existente
+-- Consulta 03: déficit calculado con existencias no vencidas (incluye el día actual).
+-- Utilizable se refiere solo a fecha de vencimiento, no a condiciones físicas.
+SET @categoria = 0;
 SELECT i.nombre AS insumo, c.nombre AS categoria, i.unidad_medida AS unidad,
        COALESCE(SUM(l.cantidad_actual), 0) AS stock,
+       COALESCE(SUM(CASE WHEN l.fecha_vencimiento < CURRENT_DATE THEN l.cantidad_actual ELSE 0 END), 0) AS vencido,
+       COALESCE(SUM(CASE WHEN l.fecha_vencimiento >= CURRENT_DATE THEN l.cantidad_actual ELSE 0 END), 0) AS utilizable,
        i.stock_minimo AS minimo,
-       i.stock_minimo - COALESCE(SUM(l.cantidad_actual), 0) AS faltante
+       i.stock_minimo - COALESCE(SUM(CASE WHEN l.fecha_vencimiento >= CURRENT_DATE THEN l.cantidad_actual ELSE 0 END), 0) AS faltante
 FROM insumo i
 JOIN categoria c ON c.id_categoria = i.id_categoria
 LEFT JOIN lote l ON l.id_insumo = i.id_insumo
 WHERE (@categoria = 0 OR i.id_categoria = @categoria)
-GROUP BY i.id_insumo, i.nombre, c.id_categoria, c.nombre,
-         i.unidad_medida, i.stock_minimo
-HAVING COALESCE(SUM(l.cantidad_actual), 0) < i.stock_minimo
+GROUP BY i.id_insumo, i.nombre, c.id_categoria, c.nombre, i.unidad_medida, i.stock_minimo
+HAVING utilizable < i.stock_minimo
 ORDER BY c.nombre, i.nombre, i.id_insumo;
 
 -- Apoyo opcional para elegir fechas de prueba con los datos realmente cargados.

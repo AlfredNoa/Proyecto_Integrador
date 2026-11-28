@@ -20,6 +20,9 @@ import java.time.LocalDate;
 @Controller
 @RequestMapping("/lotes")
 public class LoteController {
+    @org.springframework.beans.factory.annotation.Autowired private com.sgimac.service.ListadosService listados;
+    @org.springframework.beans.factory.annotation.Autowired private com.sgimac.service.AlertasService revision;
+
 
     /** DAO de lote (inyectado por el constructor). */
     private final LoteDao loteDao;
@@ -52,12 +55,16 @@ public class LoteController {
      *
      * @param model modelo de Spring donde se cargan los datos que usa la vista
      * @return nombre de la vista Thymeleaf ({@code lotes/lista})
+     
+     * @param q búsqueda por nombre o código
+     * @param estado filtro del listado
+     * @param pagina página solicitada
+     * @param tam cantidad de filas por página
      */
     @GetMapping
-    public String listar(Model model) {
-        model.addAttribute("lotes", loteDao.listar());
-        model.addAttribute("hoy", LocalDate.now());
-        return "lotes/lista";
+    public String listar(@RequestParam(defaultValue="") String q,@RequestParam(defaultValue="TODOS") String estado,
+       @RequestParam(defaultValue="1") int pagina,@RequestParam(defaultValue="20") int tam,Model model) {
+        revision.actualizar();listados.cargar(model,"lotes",q,estado,pagina,tam);return "lotes/lista";
     }
 
     /**
@@ -103,6 +110,7 @@ public class LoteController {
         lote.setFechaVencimiento(LocalDate.parse(fechaVencimiento));
         lote.setCantidadActual(cantidadActual);
         loteDao.insertar(lote);
+        revision.actualizar();
         return "redirect:/lotes";
     }
 }

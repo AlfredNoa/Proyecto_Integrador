@@ -31,9 +31,9 @@ public class ConsultaOperativaDao {
     /** El LEFT JOIN conserva alertas pendientes sin usuario de atención. */
     public List<Map<String, ?>> alertas(String tipo, String nivel, String estado) {
         String sql = """
-            SELECT a.fecha_generacion AS fecha, i.nombre AS insumo, l.codigo_qr AS lote,
+            SELECT a.fecha_generacion AS fecha, i.nombre AS insumo, COALESCE(l.codigo_qr,'Por insumo') AS lote,
                    a.tipo, a.nivel, a.estado, COALESCE(u.nombres,'—') AS responsable
-            FROM alerta a JOIN lote l ON l.id_lote=a.id_lote JOIN insumo i ON i.id_insumo=l.id_insumo
+            FROM alerta a LEFT JOIN lote l ON l.id_lote=a.id_lote JOIN insumo i ON i.id_insumo=COALESCE(a.id_insumo,l.id_insumo)
             LEFT JOIN usuario u ON u.id_usuario=a.id_usuario_atiende WHERE 1=1
             """;
         List<Object> p = new ArrayList<>();

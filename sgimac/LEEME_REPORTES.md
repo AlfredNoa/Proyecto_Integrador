@@ -1,3 +1,5 @@
+> Actualización: consultar LEEME_100_REGISTROS.md para la carga vigente (100 por tabla, 200 movimientos y 3 roles).
+
 # SGIMAC — Reporte 01 de inventario por lote — revisión 2
 
 ## Qué contiene esta entrega
@@ -28,17 +30,17 @@ Conteos al terminar la carga:
 | Tabla | Filas |
 |---|---:|
 | rol | 3 |
-| usuario | 50 |
-| categoria | 50 |
-| proveedor | 50 |
-| ubicacion | 50 |
-| insumo | 50 |
-| lote | 50 |
-| movimiento | 100 |
-| alerta | 50 |
-| notificacion | 50 |
-| reporte | 50 |
-| log_auditoria | 50 |
+| usuario | 100 |
+| categoria | 100 |
+| proveedor | 100 |
+| ubicacion | 100 |
+| insumo | 100 |
+| lote | 100 |
+| movimiento | 200 |
+| alerta | 100 |
+| notificacion | 100 |
+| reporte | 100 |
+| log_auditoria | 100 |
 
 Se mantienen los tres roles aceptados. Hay dos movimientos por lote; la diferencia entre sus cantidades coincide con las existencias. La carga es académica, incluidas las identidades y el historial. Las fechas de vencimiento se calculan a partir del día de ejecución.
 
@@ -59,7 +61,7 @@ Abre `http://localhost:8080`, inicia sesión y selecciona **Reportes**. Se abre 
 
 ## 4. Comprobar la entrega
 
-1. Sin filtros: comprobar 50 lotes: 12 vencidos, 13 críticos, 14 por vencer y 11 vigentes, si se consulta el mismo día de carga y el equipo y MySQL usan la misma fecha local.
+1. Sin filtros: comprobar 100 lotes: 22 vencidos, 28 críticos, 29 por vencer y 21 vigentes, si se consulta el mismo día de carga y el equipo y MySQL usan la misma fecha local.
 2. Buscar `LOT-001`: verificar un solo lote. Buscar un texto inexistente: verificar el mensaje sin resultados, también en PDF.
 3. Seleccionar cada estado y comparar las filas de la pantalla y el PDF. Revisar todas las páginas, acentos y columnas.
 4. Confirmar que la primera descarga exitosa de una consulta añade un registro `inventario` y su auditoría. Las descargas posteriores de esa misma consulta no duplican el historial; una nueva consulta permite un nuevo registro. La vista previa GET no registra nada; el botón Exportar PDF envía POST. Si falla la base al registrar, el PDF se entrega y se escribe una advertencia en el log; la cabecera X-SGIMAC-Registro indica pendiente. Descargar de nuevo reintenta el registro. Esta deduplicación se realiza en la sesión de una única instancia de la aplicación, suficiente para la demostración local.

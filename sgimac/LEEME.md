@@ -1,3 +1,5 @@
+> Actualización: lea primero **LEEME_MEJORAS_INVENTARIO.md**. Sobre una base existente se aplica la migración 05, sin reiniciar datos. La Consulta 03 ahora calcula déficit con stock no vencido y las alertas admiten RESUELTA. Las instrucciones de carga que siguen son para instalaciones nuevas o reinicios deliberados.
+
 # SGIMAC — Proyecto Spring Boot
 
 ## Requisitos

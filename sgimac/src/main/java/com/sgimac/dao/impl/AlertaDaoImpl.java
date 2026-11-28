@@ -38,12 +38,12 @@ public class AlertaDaoImpl implements AlertaDao {
      * usuario que la atiende.
      */
     private static final String SELECT_BASE =
-            "SELECT a.id_alerta, a.id_lote, l.codigo_qr, l.fecha_vencimiento, i.nombre AS nombre_insumo, " +
+            "SELECT a.id_alerta, a.id_lote, COALESCE(l.codigo_qr,'Por insumo') AS codigo_qr, l.fecha_vencimiento, i.nombre AS nombre_insumo, " +
             "       a.id_usuario_atiende, ua.nombres AS nombre_usuario_atiende, " +
             "       a.tipo, a.nivel, a.estado, a.fecha_generacion " +
             "FROM alerta a " +
-            "JOIN lote l ON l.id_lote = a.id_lote " +
-            "JOIN insumo i ON i.id_insumo = l.id_insumo " +
+            "LEFT JOIN lote l ON l.id_lote = a.id_lote " +
+            "JOIN insumo i ON i.id_insumo = COALESCE(a.id_insumo,l.id_insumo) " +
             "LEFT JOIN usuario ua ON ua.id_usuario = a.id_usuario_atiende ";
 
     /** Convierte cada fila del {@code ResultSet} en un objeto del modelo. */
